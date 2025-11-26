@@ -7,10 +7,10 @@ export class CreateUserDto {
     example: 'TestUser',
   })
   @IsNotEmpty()
-  @IsString({ message: 'Name must be a string' })
-  @MinLength(3, { message: 'Name must be at least 3 characters' })
-  @MaxLength(20, { message: 'Name must not exceed 20 characters' })
-  @Matches(/^[a-zA-Z0-9_]+$/, { message: 'Name can only contain letters, numbers and underscore' })
+  @IsString({ message: 'Login must be a string' })
+  @MinLength(3, { message: 'Login must be at least 3 characters' })
+  @MaxLength(20, { message: 'Login must not exceed 20 characters' })
+  @Matches(/^[a-zA-Z0-9_]+$/, { message: 'Login can only contain letters, numbers and underscore' })
   login: string;
 
   @ApiProperty({

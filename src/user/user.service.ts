@@ -1,3 +1,4 @@
+import { omitKeys } from '../utils/omit-keys';
 import {
   Injectable,
   NotFoundException,
@@ -80,7 +81,6 @@ export class UserService {
   }
 
   private excludePassword(user: User): Omit<User, 'password'> {
-    const { password, ...result } = user;
-    return result;
+    return omitKeys(user, 'password');
   }
 }

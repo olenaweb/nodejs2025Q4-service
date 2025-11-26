@@ -3,7 +3,7 @@
     "esbenp.prettier-vscode",
     "dbaeumer.vscode-eslint",
     "ms-vscode.vscode-typescript-next",
-    "firsttris.vscode-jest-runner",
+    // "firsttris.vscode-jest-runner",
     "orta.vscode-jest"
   ]
 }
