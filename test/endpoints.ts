@@ -39,6 +39,6 @@ export const favoritesRoutes = {
 
 export const authRoutes = {
   signup: '/auth/signup',
-  login: '/auth/login',
+  login: '/auth/signup',
   refresh: '/auth/refresh',
 };

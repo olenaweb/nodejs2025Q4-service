@@ -38,3 +38,4 @@ tutor
 # Environment variables
 .env
 .gitignore
+README.html

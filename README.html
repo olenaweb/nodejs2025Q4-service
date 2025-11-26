@@ -31,13 +31,18 @@
 <li>Node.js - <a href="https://nodejs.org/en/download/">Download &amp; Install Node.js</a> and the npm package manager.</li>
 </ul>
 <h2 id="downloading">Downloading </h2>
-<pre data-role="codeBlock" data-info="" class="language-text"><code>git clone {repository URL}
-</code></pre><h2 id="installing-npm-modules">Installing NPM modules </h2>
-<pre data-role="codeBlock" data-info="" class="language-text"><code>npm install
+<pre data-role="codeBlock" data-info="" class="language-text"><code>git clone https://github.com/olenaweb/nodejs2025Q4-service.git
+cd nodejs2025Q4-service
+git checkout -b dev origin/dev
+
+</code></pre><h2 id="important-because-old-project">Important!!! (because old project!!!) </h2>
+<h2 id="installing-npm-modules">Installing NPM modules </h2>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>npm install --legacy-peer-deps
 </code></pre><h2 id="running-application">Running application </h2>
-<pre data-role="codeBlock" data-info="" class="language-text"><code>npm start
+<pre data-role="codeBlock" data-info="" class="language-text"><code>npm run start:dev
 </code></pre><p>After starting the app on port (4000 as default) you can open<br>
-in your browser OpenAPI documentation by typing <a href="http://localhost:4000/doc/">http://localhost:4000/doc/</a>.<br>
+in your browser OpenAPI documentation by typing <a href="http://localhost:4000/doc/">http://localhost:4000/doc/</a> and check work of application.</p>
+<p>To test, click the "Try it out" button, enter parameters , if necessary, and click the button "Execute".<br>
 For more information about OpenAPI/Swagger please visit <a href="https://swagger.io/">https://swagger.io/</a>.</p>
 <h2 id="testing">Testing </h2>
 <p>After application running open new terminal and enter:</p>
@@ -45,6 +50,11 @@ For more information about OpenAPI/Swagger please visit <a href="https://swagger
 <pre data-role="codeBlock" data-info="" class="language-text"><code>npm run test
 </code></pre><p>To run only one of all test suites</p>
 <pre data-role="codeBlock" data-info="" class="language-text"><code>npm run test -- &lt;path to suite&gt;
+
+npm test -- test/users.e2e.spec.ts
+
+npm test -- test/artists.e2e.spec.ts
+
 </code></pre><p>To run all test with authorization</p>
 <pre data-role="codeBlock" data-info="" class="language-text"><code>npm run test:auth
 </code></pre><p>To run only specific test suite with authorization</p>
@@ -55,6 +65,99 @@ For more information about OpenAPI/Swagger please visit <a href="https://swagger
 </code></pre><h3 id="debugging-in-vscode">Debugging in VSCode </h3>
 <p>Press <kbd>F5</kbd> to debug.</p>
 <p>For more information, visit: <a href="https://code.visualstudio.com/docs/editor/debugging">https://code.visualstudio.com/docs/editor/debugging</a></p>
+<h4 id="run">RUN </h4>
+<p><strong>✅ What to check with OpenAPI/Swagger:</strong></p>
+<ol>
+<li>Open in your browser: <code>http://localhost:4000/doc</code></li>
+<li>You should see Swagger UI with a "Users" and others sections</li>
+<li>Try running queries directly in Swagger:
+<ul>
+<li>Click on <code>POST /user</code></li>
+<li>Click "Try it out"</li>
+<li>Enter data:<pre data-role="codeBlock" data-info="json" class="language-json json"><code><span class="token punctuation">{</span>
+  <span class="token property">"login"</span><span class="token operator">:</span> <span class="token string">"testuser"</span><span class="token punctuation">,</span>
+  <span class="token property">"password"</span><span class="token operator">:</span> <span class="token string">"password123"</span>
+<span class="token punctuation">}</span>
+</code></pre></li>
+<li>Click "Execute"</li>
+<li>You will receive a response with the created user (without password!)</li>
+</ul>
+</li>
+<li>continue with others endpoints</li>
+</ol>
+<h5 id="декоратор-apiproperty">Декоратор @ApiProperty: </h5>
+<p>Adds field descriptions to Swagger documentation<br>
+Shows example values.<br>
+Helps you understand what each field means.<br>
+In CreateUserDto and other DTO -&gt; @ApiProperty used for OpenAPI/Swagger documentation.</p>
+<h4 id="user">USER </h4>
+<p><strong>Example endpoints:</strong></p>
+<ul>
+<li><code>POST http://localhost:4000/user</code> - create user</li>
+<li><code>GET http://localhost:4000/user</code> - all users</li>
+<li><code>GET http://localhost:4000/user/123e4567-e89b-12d3-a456-426614174000</code> - one user</li>
+<li><code>PUT http://localhost:4000/user/123e4567-e89b-12d3-a456-426614174000</code> - renew password</li>
+<li><code>DELETE http://localhost:4000/user/123e4567-e89b-12d3-a456-426614174000</code> - delete user</li>
+</ul>
+<h6 id="bash-terminal">bash terminal </h6>
+<ol>
+<li>all users</li>
+</ol>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>curl -X 'GET' \
+ 'http://localhost:4000/user' \
+ -H 'accept: _/_'
+</code></pre><ol start="2">
+<li>create user</li>
+</ol>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>   curl -X 'POST' \
+    'http://localhost:4000/user' \
+    -H 'accept: _/_' \
+    -H 'Content-Type: application/json' \
+    -d '{
+   "login": "TestUser",
+   "password": "Password_123"
+   }'
+</code></pre><ol start="3">
+<li>get user with id<br>
+Id from real user , see <a href="http://localhost:4000/user">http://localhost:4000/user</a></li>
+</ol>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>   curl -X 'GET' \
+    'http://localhost:4000/user/71da8eb5-5bf7-4204-a023-986089609144' \
+    -H 'accept: _/_'
+</code></pre><ol start="4">
+<li>change password : Password_123 -&gt;newPassword_123</li>
+</ol>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>   curl -X 'PUT' \
+    'http://localhost:4000/user/71da8eb5-5bf7-4204-a023-986089609144' \
+    -H 'accept: _/_' \
+    -H 'Content-Type: application/json' \
+    -d '{
+   "oldPassword": "Password_123",
+   "newPassword": "newPassword_123"
+   }'
+</code></pre><ol start="5">
+<li>delete user</li>
+</ol>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>   curl -X 'DELETE' \
+    'http://localhost:4000/user/597f7ecf-d67f-4e8f-ada2-f1d51cba1d5e' \
+    -H 'accept: _/_'
+</code></pre><h4 id="browser">Browser </h4>
+<p>Get</p>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>http://localhost:4000/user
+</code></pre><p>Get id</p>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>http://localhost:4000/user/1c36162f-171c-464b-ac7f-a827bf40e21f
+</code></pre><h4 id="artist">artist </h4>
+<ol>
+<li>create artist<br>
+curl -X 'POST' <br>
+'<a href="http://localhost:4000/artist">http://localhost:4000/artist</a>' <br>
+-H 'accept: <em>/</em>' <br>
+-H 'Content-Type: application/json' <br>
+-d '{<br>
+"name": "The Beatles",<br>
+"grammy": true<br>
+}'</li>
+</ol>
 
       </div>
       

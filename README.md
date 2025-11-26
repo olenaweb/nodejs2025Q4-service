@@ -8,23 +8,30 @@
 ## Downloading
 
 ```
-git clone {repository URL}
+git clone https://github.com/olenaweb/nodejs2025Q4-service.git
+cd nodejs2025Q4-service
+git checkout -b dev origin/dev
+
 ```
+
+## Important!!! (because old project!!!)
 
 ## Installing NPM modules
 
 ```
-npm install
+npm install --legacy-peer-deps
 ```
 
 ## Running application
 
 ```
-npm start
+npm run start:dev
 ```
 
 After starting the app on port (4000 as default) you can open
-in your browser OpenAPI documentation by typing http://localhost:4000/doc/.
+in your browser OpenAPI documentation by typing http://localhost:4000/doc/ and check work of application.
+
+To test, click the "Try it out" button, enter parameters , if necessary, and click the button "Execute".
 For more information about OpenAPI/Swagger please visit https://swagger.io/.
 
 ## Testing
@@ -41,6 +48,11 @@ To run only one of all test suites
 
 ```
 npm run test -- <path to suite>
+
+npm test -- test/users.e2e.spec.ts
+
+npm test -- test/artists.e2e.spec.ts
+
 ```
 
 To run all test with authorization
@@ -73,15 +85,42 @@ For more information, visit: https://code.visualstudio.com/docs/editor/debugging
 
 #### RUN
 
-###### bash terminal
+**✅ What to check with OpenAPI/Swagger:**
 
-#### USER
+1. Open in your browser: `http://localhost:4000/doc`
+2. You should see Swagger UI with a "Users" and others sections
+3. Try running queries directly in Swagger:
+   - Click on `POST /user`
+   - Click "Try it out"
+   - Enter data:
+     ```json
+     {
+       "login": "testuser",
+       "password": "password123"
+     }
+     ```
+   - Click "Execute"
+   - You will receive a response with the created user (without password!)
+4. continue with others endpoints
+
 ##### Декоратор @ApiProperty:
 
 Adds field descriptions to Swagger documentation
-Shows example values
-Helps you understand what each field means
-CreateUserDto and other DTO -> @ApiProperty- used for Swagger documentation
+Shows example values.
+Helps you understand what each field means.
+In CreateUserDto and other DTO -> @ApiProperty used for OpenAPI/Swagger documentation.
+
+#### USER
+
+**Example endpoints:**
+
+- `POST http://localhost:4000/user` - create user
+- `GET http://localhost:4000/user` - all users
+- `GET http://localhost:4000/user/123e4567-e89b-12d3-a456-426614174000` - one user
+- `PUT http://localhost:4000/user/123e4567-e89b-12d3-a456-426614174000` - renew password
+- `DELETE http://localhost:4000/user/123e4567-e89b-12d3-a456-426614174000` - delete user
+
+###### bash terminal
 
 1. all users
 
@@ -147,3 +186,15 @@ Get id
 ```
 http://localhost:4000/user/1c36162f-171c-464b-ac7f-a827bf40e21f
 ```
+
+#### artist
+
+1. create artist
+   curl -X 'POST' \
+    'http://localhost:4000/artist' \
+    -H 'accept: _/_' \
+    -H 'Content-Type: application/json' \
+    -d '{
+   "name": "The Beatles",
+   "grammy": true
+   }'
