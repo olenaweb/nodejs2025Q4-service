@@ -70,3 +70,80 @@ npm run format
 Press <kbd>F5</kbd> to debug.
 
 For more information, visit: https://code.visualstudio.com/docs/editor/debugging
+
+#### RUN
+
+###### bash terminal
+
+#### USER
+##### Декоратор @ApiProperty:
+
+Adds field descriptions to Swagger documentation
+Shows example values
+Helps you understand what each field means
+CreateUserDto and other DTO -> @ApiProperty- used for Swagger documentation
+
+1. all users
+
+```
+curl -X 'GET' \
+ 'http://localhost:4000/user' \
+ -H 'accept: _/_'
+```
+
+2. create user
+
+```
+   curl -X 'POST' \
+    'http://localhost:4000/user' \
+    -H 'accept: _/_' \
+    -H 'Content-Type: application/json' \
+    -d '{
+   "login": "TestUser",
+   "password": "Password_123"
+   }'
+```
+
+3. get user with id
+   Id from real user , see http://localhost:4000/user
+
+```
+   curl -X 'GET' \
+    'http://localhost:4000/user/71da8eb5-5bf7-4204-a023-986089609144' \
+    -H 'accept: _/_'
+```
+
+4. change password : Password_123 ->newPassword_123
+
+```
+   curl -X 'PUT' \
+    'http://localhost:4000/user/71da8eb5-5bf7-4204-a023-986089609144' \
+    -H 'accept: _/_' \
+    -H 'Content-Type: application/json' \
+    -d '{
+   "oldPassword": "Password_123",
+   "newPassword": "newPassword_123"
+   }'
+```
+
+5. delete user
+
+```
+   curl -X 'DELETE' \
+    'http://localhost:4000/user/597f7ecf-d67f-4e8f-ada2-f1d51cba1d5e' \
+    -H 'accept: _/_'
+```
+
+#### Browser
+
+Get
+
+```
+http://localhost:4000/user
+```
+
+Get id
+
+```
+http://localhost:4000/user/1c36162f-171c-464b-ac7f-a827bf40e21f
+```
