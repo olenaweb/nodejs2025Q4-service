@@ -5,7 +5,7 @@
 - Git - [Download & Install Git](https://git-scm.com/downloads).
 - Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager.
 
-## Downloading
+## Downloading and Install
 
 ```
 git clone https://github.com/olenaweb/nodejs2025Q4-service.git
@@ -14,9 +14,9 @@ git checkout -b dev origin/dev
 
 ```
 
-## Important!!! (because old project!!!)
+#### Important!!! (because old project!!!)
 
-## Installing NPM modules
+#### Installing NPM modules
 
 The --legacy-peer-deps flag is used to resolve dependency version conflicts.
 
@@ -34,15 +34,19 @@ npm run start:dev
    in your browser OpenAPI documentation by typing http://localhost:4000/doc/ and check work of application.
 2. On http://localhost:4000/doc-json enable json version of yaml
 3. download json Powershell terminal :
-   Invoke-WebRequest -Uri http://localhost:4000/doc-json -OutFile doc/openapi-check.json
-4. Json-> Yaml online generator : https://www.bairesdev.com/tools/json2yaml/
 
-5. To test, click the "Try it out" button, enter parameters , if necessary, and click the button "Execute".
-   For more information about OpenAPI/Swagger please visit https://swagger.io/.
+```
+   Invoke-WebRequest -Uri http://localhost:4000/doc-json -OutFile doc/openapi-check.json
+```
+
+4. Json-> Yaml online generator on site: https://www.bairesdev.com/tools/json2yaml/
+
+5. To test, click the "Try it out" button. If necessary, enter body and click the button "Execute".
+6. For more information about OpenAPI/Swagger please visit https://swagger.io/.
 
 ## Testing :
 
-#### first start the server with the command:
+#### !!! first start the server with the command:
 
 ```
  npm run start
@@ -50,7 +54,7 @@ npm run start:dev
 
 After application running open new terminal and enter:
 
-To run all tests without authorization
+To run all tests
 
 ```
 npm run test
@@ -60,25 +64,19 @@ To run only one of all test suites
 
 ```
 npm run test -- <path to suite>
+```
 
+example:
+
+```
 npm test -- test/users.e2e.spec.ts
 
 npm test -- test/artists.e2e.spec.ts
 
 npm test -- test/albums.e2e.spec.ts
 
-```
+npm test -- test/tracks.e2e.spec.ts
 
-To run all test with authorization
-
-```
-npm run test:auth
-```
-
-To run only specific test suite with authorization
-
-```
-npm run test:auth -- <path to suite>
 ```
 
 ### Auto-fix and format
@@ -90,12 +88,6 @@ npm run lint
 ```
 npm run format
 ```
-
-### Debugging in VSCode
-
-Press <kbd>F5</kbd> to debug.
-
-For more information, visit: https://code.visualstudio.com/docs/editor/debugging
 
 #### RUN
 
@@ -117,12 +109,12 @@ For more information, visit: https://code.visualstudio.com/docs/editor/debugging
    - You will receive a response with the created user (without password!)
 4. continue with others endpoints
 
-##### Декоратор @ApiProperty:
+##### @Api Decorators: @ApiProperty; @ApiTags ; @ApiOperation ; @ApiResponse. See OpenAPI/Swagger documentation: http://localhost:4000/doc
 
-Adds field descriptions to Swagger documentation
-Shows example values.
-Helps you understand what each field means.
-In CreateUserDto and other DTO -> @ApiProperty used for OpenAPI/Swagger documentation.
+1. Adds field descriptions to Swagger documentation
+   Shows example values.
+2. Helps you understand what each field means.
+3. In CreateUserDto and other DTO , in Controllers -> @Api Decorators used for OpenAPI/Swagger documentation.
 
 #### USER
 
@@ -134,7 +126,7 @@ In CreateUserDto and other DTO -> @ApiProperty used for OpenAPI/Swagger document
 - `PUT http://localhost:4000/user/123e4567-e89b-12d3-a456-426614174000` - renew password
 - `DELETE http://localhost:4000/user/123e4567-e89b-12d3-a456-426614174000` - delete user
 
-###### bash terminal
+###### Check on bash terminal
 
 1. all users
 
@@ -187,28 +179,75 @@ curl -X 'GET' \
     -H 'accept: _/_'
 ```
 
+###### You can continue do it for others endpoints (artist, album, track, favs) or check using Swagger site http://localhost:4000/doc (press button "Try it out",then button "Execute")
+
 #### Browser
 
 Get
 
 ```
 http://localhost:4000/user
+http://localhost:4000/artist
+http://localhost:4000/album
+http://localhost:4000/track
+http://localhost:4000/favs/track
+http://localhost:4000/favs/artist
+http://localhost:4000/favs/album
+
 ```
 
 Get id
 
 ```
 http://localhost:4000/user/1c36162f-171c-464b-ac7f-a827bf40e21f
+http://localhost:4000/user/[id]
+http://localhost:4000/artist/[id]
+http://localhost:4000/album/[id]
+http://localhost:4000/track/[id]
+http://localhost:4000/favs/track/[id]
+http://localhost:4000/favs/artist/[id]
+http://localhost:4000/favs/album/[id]
 ```
 
-#### artist
+#### Example body with all fields or not:
 
-1. create artist
-   curl -X 'POST' \
-    'http://localhost:4000/artist' \
-    -H 'accept: _/_' \
-    -H 'Content-Type: application/json' \
-    -d '{
-   "name": "The Beatles",
-   "grammy": true
-   }'
+###### Album Innuendo
+
+```
+{
+"name": "Innuendo",
+"year": 1991,
+"artistId": "b2c3d4e5-f6a7-8901-bcde-f12345678901"
+}
+```
+
+###### Answer :
+
+```
+{
+"id": "04e66221-0410-4a67-8d37-c7f8f5022e1b",
+"name": "Innuendo",
+"year": 1991,
+"artistId": "b2c3d4e5-f6a7-8901-bcde-f12345678901"
+}
+```
+
+###### Unknown album
+
+```
+{
+"name": "Unknown Album",
+"year": 2020,
+}
+```
+
+###### Answer :
+
+```
+{
+"id": "04e66221-0410-4a67-8d37-c7f8f5022e1b",
+"name": "Unknown Album",
+"year": 2020,
+"artistId": null
+}
+```

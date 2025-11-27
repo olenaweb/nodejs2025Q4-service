@@ -20,7 +20,7 @@ export class CreateAlbumDto {
 
   @ApiProperty({
     description: 'Artist ID',
-    example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+    example: '8d3ee94f-876d-4ba1-a64c-f8d6ace64302',
     required: false,
     nullable: true,
   })
