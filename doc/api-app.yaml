@@ -1,0 +1,256 @@
+openapi: 3.0.0
+info:
+  title: RSS Home Library Service
+  description: Home music library service - olenaweb/nodejs2025Q4-service
+  version: 1.0.0
+  contact: {}
+tags: []
+servers: []
+
+paths:
+  /:
+    get:
+      operationId: AppController_getHello
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - App
+
+  /user:
+    post:
+      operationId: UserController_create
+      summary: Create user
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserDto'
+      responses:
+        '201':
+          description: The user has been created.
+        '400':
+          description: Bad request. Body does not contain required fields.
+    get:
+      operationId: UserController_findAll
+      summary: Get all users
+      tags:
+        - Users
+      responses:
+        '200':
+          description: Successful operation
+
+  /user/{id}:
+    get:
+      operationId: UserController_findOne
+      summary: Get single user by id
+      tags:
+        - Users
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Bad request. userId is invalid (not uuid)
+        '404':
+          description: User not found
+    put:
+      operationId: UserController_update
+      summary: Update a user's password
+      tags:
+        - Users
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePasswordDto'
+      responses:
+        '200':
+          description: The user has been updated.
+        '400':
+          description: Bad request. userId is invalid (not uuid)
+        '403':
+          description: oldPassword is wrong
+        '404':
+          description: User not found
+    delete:
+      operationId: UserController_remove
+      summary: Delete user
+      tags:
+        - Users
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '204':
+          description: The user has been deleted
+        '400':
+          description: Bad request. userId is invalid (not uuid)
+        '404':
+          description: User not found
+
+  /artist:
+    post:
+      operationId: ArtistController_create
+      summary: Create artist
+      tags:
+        - Artists
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateArtistDto'
+      responses:
+        '201':
+          description: Artist created successfully
+        '400':
+          description: Bad request. Invalid data
+    get:
+      operationId: ArtistController_findAll
+      summary: Get all artists
+      tags:
+        - Artists
+      responses:
+        '200':
+          description: Return all artists
+
+  /artist/{id}:
+    get:
+      operationId: ArtistController_findOne
+      summary: Get artist by id
+      tags:
+        - Artists
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Return artist by id
+        '400':
+          description: Bad request. Invalid UUID
+        '404':
+          description: Artist not found
+    put:
+      operationId: ArtistController_update
+      summary: Update artist information
+      tags:
+        - Artists
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateArtistDto'
+      responses:
+        '200':
+          description: Artist updated successfully
+        '400':
+          description: Bad request. Invalid data
+        '404':
+          description: Artist not found
+    delete:
+      operationId: ArtistController_remove
+      summary: Delete artist
+      tags:
+        - Artists
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Artist deleted successfully
+        '400':
+          description: Bad request. Invalid UUID
+        '404':
+          description: Artist not found
+
+components:
+  schemas:
+    CreateUserDto:
+      type: object
+      properties:
+        login:
+          type: string
+          description: User login
+          example: TestUser
+        password:
+          type: string
+          description: User password
+          example: Password123
+      required:
+        - login
+        - password
+
+    UpdatePasswordDto:
+      type: object
+      properties:
+        oldPassword:
+          type: string
+          description: Previous password
+          example: oldPassword123
+        newPassword:
+          type: string
+          description: New password
+          example: newPassword456
+      required:
+        - oldPassword
+        - newPassword
+
+    CreateArtistDto:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Artist name
+          example: The Beatles
+        grammy:
+          type: boolean
+          description: Does the artist have a Grammy award
+          example: true
+      required:
+        - name
+        - grammy
+
+    UpdateArtistDto:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Artist name
+          example: The Beatles
+        grammy:
+          type: boolean
+          description: Does the artist have a Grammy award
+          example: true

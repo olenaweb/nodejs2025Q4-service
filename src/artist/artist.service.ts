@@ -4,10 +4,13 @@ import { validate } from 'uuid';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { Artist } from './entities/artist.entity';
+import { AlbumService } from '../album/album.service';
 
 @Injectable()
 export class ArtistService {
   private artists: Artist[] = [];
+
+  constructor(private readonly albumService: AlbumService) {}
 
   create(createArtistDto: CreateArtistDto): Artist {
     const artist: Artist = {
@@ -55,6 +58,10 @@ export class ArtistService {
       return false;
     }
     this.artists.splice(index, 1);
+
+    // Clear artist reference in albums
+    this.albumService.clearArtistId(id);
+
     return true;
   }
 }

@@ -18,6 +18,8 @@ git checkout -b dev origin/dev
 
 ## Installing NPM modules
 
+The --legacy-peer-deps flag is used to resolve dependency version conflicts.
+
 ```
 npm install --legacy-peer-deps
 ```
@@ -28,13 +30,23 @@ npm install --legacy-peer-deps
 npm run start:dev
 ```
 
-After starting the app on port (4000 as default) you can open
-in your browser OpenAPI documentation by typing http://localhost:4000/doc/ and check work of application.
+1. After starting the app on port (4000 as default) you can open
+   in your browser OpenAPI documentation by typing http://localhost:4000/doc/ and check work of application.
+2. On http://localhost:4000/doc-json enable json version of yaml
+3. download json Powershell terminal :
+   Invoke-WebRequest -Uri http://localhost:4000/doc-json -OutFile doc/openapi-check.json
+4. Json-> Yaml online generator : https://www.bairesdev.com/tools/json2yaml/
 
-To test, click the "Try it out" button, enter parameters , if necessary, and click the button "Execute".
-For more information about OpenAPI/Swagger please visit https://swagger.io/.
+5. To test, click the "Try it out" button, enter parameters , if necessary, and click the button "Execute".
+   For more information about OpenAPI/Swagger please visit https://swagger.io/.
 
-## Testing
+## Testing :
+
+#### first start the server with the command:
+
+```
+ npm run start
+```
 
 After application running open new terminal and enter:
 
@@ -52,6 +64,8 @@ npm run test -- <path to suite>
 npm test -- test/users.e2e.spec.ts
 
 npm test -- test/artists.e2e.spec.ts
+
+npm test -- test/albums.e2e.spec.ts
 
 ```
 
