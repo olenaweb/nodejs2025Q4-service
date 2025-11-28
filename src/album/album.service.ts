@@ -1,16 +1,21 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { validate } from 'uuid';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { Album } from './entities/album.entity';
 import { TrackService } from '../track/track.service';
+import { FavsService } from '../favs/favs.service';
 
 @Injectable()
 export class AlbumService {
   private albums: Album[] = [];
 
-  constructor(private readonly trackService: TrackService) {}
+  constructor(
+    private readonly trackService: TrackService,
+    @Inject(forwardRef(() => FavsService))
+    private readonly favsService: FavsService,
+  ) {}
 
   create(createAlbumDto: CreateAlbumDto): Album {
     const album: Album = {
@@ -64,8 +69,9 @@ export class AlbumService {
     }
     this.albums.splice(index, 1);
 
-    // Clear album reference in tracks
+    // Clear album reference in tracks and favorites
     this.trackService.clearAlbumId(id);
+    this.favsService.removeAlbum(id);
 
     return true;
   }

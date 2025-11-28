@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { validate } from 'uuid';
 import { CreateArtistDto } from './dto/create-artist.dto';
@@ -6,6 +6,7 @@ import { UpdateArtistDto } from './dto/update-artist.dto';
 import { Artist } from './entities/artist.entity';
 import { AlbumService } from '../album/album.service';
 import { TrackService } from '../track/track.service';
+import { FavsService } from '../favs/favs.service';
 
 @Injectable()
 export class ArtistService {
@@ -14,6 +15,8 @@ export class ArtistService {
   constructor(
     private readonly albumService: AlbumService,
     private readonly trackService: TrackService,
+    @Inject(forwardRef(() => FavsService))
+    private readonly favsService: FavsService,
   ) {}
 
   create(createArtistDto: CreateArtistDto): Artist {
@@ -63,9 +66,10 @@ export class ArtistService {
     }
     this.artists.splice(index, 1);
 
-    // Clear artist reference in albums and tracks
+    // Clear artist reference in albums, tracks and favorites
     this.albumService.clearArtistId(id);
     this.trackService.clearArtistId(id);
+    this.favsService.removeArtist(id);
 
     return true;
   }
