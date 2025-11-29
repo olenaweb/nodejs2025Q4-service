@@ -30,31 +30,35 @@ npm install --legacy-peer-deps
 npm run start:dev
 ```
 
-1. After starting the app on port (4000 as default) you can open
-   in your browser OpenAPI documentation by typing http://localhost:4000/doc/ and check work of application.
-2. On http://localhost:4000/doc-json enable json version of yaml
-3. download json Powershell terminal :
+1. Start the app (4000 as default) : http://localhost:4000
+2. After starting the app on port (4000 as default) you can open
+   in your browser OpenAPI documentation by typing http://localhost:4000/doc/ or press the button "Open Docs" and check work of application.
+3. To test, click the "Try it out" button. If necessary, enter body and click the button "Execute".
+4. See doc\api.yaml - yaml documentation of the App
+
+5. For more information about OpenAPI/Swagger visit https://swagger.io/.
+
+6. On http://localhost:4000/doc-json enable json version of yaml
+
+7. Or download json by Powershell terminal :
 
 ```
    Invoke-WebRequest -Uri http://localhost:4000/doc-json -OutFile doc/openapi-check.json
 ```
 
-4. Json-> Yaml online generator on site: https://www.bairesdev.com/tools/json2yaml/
+8. You can also use Json-> Yaml online generator on site: https://www.bairesdev.com/tools/json2yaml/ to get actual Yaml documentation.
 
-5. To test, click the "Try it out" button. If necessary, enter body and click the button "Execute".
-6. For more information about OpenAPI/Swagger please visit https://swagger.io/.
+## Testing
 
-## Testing :
-
-#### !!! first start the server with the command:
+#### !!! First start the server with the command:
 
 ```
- npm run start
+npm run start
 ```
 
 After application running open new terminal and enter:
 
-To run all tests
+To run all tests (67 tests should pass)
 
 ```
 npm run test
@@ -89,6 +93,16 @@ npm run lint
 npm run format
 ```
 
+## Modules
+
+This application includes 5 main modules:
+
+- **User** - User management with authentication
+- **Artist** - Artist management
+- **Album** - Album management with artist relationships
+- **Track** - Track management with artist and album relationships
+- **Favorites** - Favorites management for artists, albums, and tracks
+
 #### RUN
 
 **✅ What to check with OpenAPI/Swagger:**
@@ -102,7 +116,7 @@ npm run format
      ```json
      {
        "login": "testuser",
-       "password": "password123"
+       "password": "Password123"
      }
      ```
    - Click "Execute"
@@ -133,7 +147,7 @@ npm run format
 ```
 curl -X 'GET' \
  'http://localhost:4000/user' \
- -H 'accept: _/_'
+ -H 'accept: */*'
 ```
 
 2. create user
@@ -141,7 +155,7 @@ curl -X 'GET' \
 ```
    curl -X 'POST' \
     'http://localhost:4000/user' \
-    -H 'accept: _/_' \
+    -H 'accept: */*' \
     -H 'Content-Type: application/json' \
     -d '{
    "login": "TestUser",
@@ -155,7 +169,7 @@ curl -X 'GET' \
 ```
    curl -X 'GET' \
     'http://localhost:4000/user/71da8eb5-5bf7-4204-a023-986089609144' \
-    -H 'accept: _/_'
+    -H 'accept: */*'
 ```
 
 4. change password : Password_123 ->newPassword_123
@@ -163,7 +177,7 @@ curl -X 'GET' \
 ```
    curl -X 'PUT' \
     'http://localhost:4000/user/71da8eb5-5bf7-4204-a023-986089609144' \
-    -H 'accept: _/_' \
+    -H 'accept: */*' \
     -H 'Content-Type: application/json' \
     -d '{
    "oldPassword": "Password_123",
@@ -176,7 +190,7 @@ curl -X 'GET' \
 ```
    curl -X 'DELETE' \
     'http://localhost:4000/user/597f7ecf-d67f-4e8f-ada2-f1d51cba1d5e' \
-    -H 'accept: _/_'
+    -H 'accept: */*'
 ```
 
 ###### You can continue do it for others endpoints (artist, album, track, favs) or check using Swagger site http://localhost:4000/doc (press button "Try it out",then button "Execute")
@@ -237,7 +251,7 @@ http://localhost:4000/favs/album/[id]
 ```
 {
 "name": "Unknown Album",
-"year": 2020,
+"year": 2020
 }
 ```
 
