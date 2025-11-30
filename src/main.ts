@@ -1,4 +1,5 @@
-import * as YAML from 'yaml';
+// import * as YAML from 'yaml';
+import { stringify } from 'yaml'
 import { EOL } from 'os';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
@@ -36,7 +37,7 @@ async function bootstrap() {
   // get YAML with Express
   const expressApp = app.getHttpAdapter().getInstance();
   expressApp.get('/doc-yaml', (req, res) => {
-    const yaml = YAML.stringify(createSwaggerDocument());
+    const yaml = stringify(createSwaggerDocument());
     res.type('text/yaml').send(yaml);
   });
 

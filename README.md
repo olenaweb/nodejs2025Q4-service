@@ -10,7 +10,7 @@
 ```
 git clone https://github.com/olenaweb/nodejs2025Q4-service.git
 cd nodejs2025Q4-service
-git checkout -b dev origin/dev
+git checkout -b dev-part1 origin/dev-part1
 
 ```
 
@@ -25,14 +25,19 @@ npm install --legacy-peer-deps
 ```
 
 ## Running application
+
 #### Development Mode
+
 ```
 npm run start:dev
 ```
+
 #### Production Mode
+
 ```
 npm run start
 ```
+
 1. Start the app (4000 as default) : http://localhost:4000
    There is an accessible menu for viewing documentation.
 2. After starting the app on port (4000 as default) you can open
@@ -41,11 +46,9 @@ npm run start
 3. To test, click the "Try it out" button. If necessary, enter body and click the button "Execute".
 
 4. See folder doc\api.yaml - yaml documentation of the App
- or press the button "DOC Yaml" or type http://localhost:4000/doc-yaml/.
+   or press the button "DOC Yaml" or type http://localhost:4000/doc-yaml/.
 
 5. For more information about OpenAPI/Swagger visit https://swagger.io/ and https://docs.nestjs.com/openapi/introduction
-
-
 
 ## Testing (only after Server started!!!)
 
