@@ -1,5 +1,5 @@
-// import * as YAML from 'yaml';
-import { stringify } from 'yaml'
+import { stringify } from 'yaml';
+import { Request, Response, Express } from 'express';
 import { EOL } from 'os';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
@@ -35,13 +35,14 @@ async function bootstrap() {
   SwaggerModule.setup('doc', app, createSwaggerDocument);
 
   // get YAML with Express
-  const expressApp = app.getHttpAdapter().getInstance();
-  expressApp.get('/doc-yaml', (req, res) => {
+  const expressApp: Express = app.getHttpAdapter().getInstance();
+  expressApp.get('/doc-yaml', (_req: Request, res: Response): void => {
     const yaml = stringify(createSwaggerDocument());
     res.type('text/yaml').send(yaml);
   });
 
   const port = process.env.PORT || 4000;
+  app.enableShutdownHooks();
   await app.listen(port);
   console.log(`✅ Application is running on: http://localhost:${port}. Ctrl+C to exit${EOL}`);
   console.log(`✅ Swagger UI: http://localhost:${port}/doc${EOL}`);

@@ -1,6 +1,14 @@
 import { Injectable } from '@nestjs/common';
 @Injectable()
 export class AppService {
+  onModuleInit(): void {
+    console.log('*** Application Module Initialized');
+  }
+
+  onModuleDestroy(): void {
+    console.log('*** Application Module Shutting Down');
+  }
+
   getHeadDoc(): string {
     return `
 <div style="
