@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-
 @Injectable()
 export class AppService {
   getHeadDoc(): string {
@@ -42,9 +41,9 @@ export class AppService {
       font-weight: 600;
       box-shadow: 0 3px 8px rgba(0,0,0,0.15);
       transition: 0.2s;
-    ">📘 Open Docs</a>
+    ">📘 Swagger UI</a>
 
-    <a href="/user" style="
+    <a href="/doc-yaml" style="
       padding: 10px 18px;
       background: #2f855a;
       color: white;
@@ -54,9 +53,9 @@ export class AppService {
       font-weight: 600;
       box-shadow: 0 3px 8px rgba(0,0,0,0.15);
       transition: 0.2s;
-    ">👤 Users</a>
+    ">⭐ Doc Yaml</a>
 
-    <a href="/favs" style="
+    <a href="/user" style="
       padding: 10px 18px;
       background: #b83280;
       color: white;
@@ -66,7 +65,7 @@ export class AppService {
       font-weight: 600;
       box-shadow: 0 3px 8px rgba(0,0,0,0.15);
       transition: 0.2s;
-    ">⭐ Favorites</a>
+    ">👤 User</a>
   </div>
 
   <div style="

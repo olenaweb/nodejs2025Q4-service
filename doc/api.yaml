@@ -3,7 +3,7 @@ openapi: 3.0.0
 paths:
   "/user":
     post:
-      operationId: UserController_create
+      operationId: create
       parameters: []
       requestBody:
         required: true
@@ -20,7 +20,7 @@ paths:
       tags:
       - Users
     get:
-      operationId: UserController_findAll
+      operationId: findAll
       parameters: []
       responses:
         '200':
@@ -30,7 +30,7 @@ paths:
       - Users
   "/user/{id}":
     get:
-      operationId: UserController_findOne
+      operationId: findOne
       parameters:
       - name: id
         required: true
@@ -48,7 +48,7 @@ paths:
       tags:
       - Users
     put:
-      operationId: UserController_update
+      operationId: update
       parameters:
       - name: id
         required: true
@@ -74,7 +74,7 @@ paths:
       tags:
       - Users
     delete:
-      operationId: UserController_remove
+      operationId: remove
       parameters:
       - name: id
         required: true
@@ -93,7 +93,7 @@ paths:
       - Users
   "/artist":
     post:
-      operationId: ArtistController_create
+      operationId: create
       parameters: []
       requestBody:
         required: true
@@ -110,7 +110,7 @@ paths:
       tags:
       - Artists
     get:
-      operationId: ArtistController_findAll
+      operationId: findAll
       parameters: []
       responses:
         '200':
@@ -120,7 +120,7 @@ paths:
       - Artists
   "/artist/{id}":
     get:
-      operationId: ArtistController_findOne
+      operationId: findOne
       parameters:
       - name: id
         required: true
@@ -138,7 +138,7 @@ paths:
       tags:
       - Artists
     put:
-      operationId: ArtistController_update
+      operationId: update
       parameters:
       - name: id
         required: true
@@ -162,7 +162,7 @@ paths:
       tags:
       - Artists
     delete:
-      operationId: ArtistController_remove
+      operationId: remove
       parameters:
       - name: id
         required: true
@@ -181,7 +181,7 @@ paths:
       - Artists
   "/album":
     post:
-      operationId: AlbumController_create
+      operationId: create
       parameters: []
       requestBody:
         required: true
@@ -198,7 +198,7 @@ paths:
       tags:
       - Albums
     get:
-      operationId: AlbumController_findAll
+      operationId: findAll
       parameters: []
       responses:
         '200':
@@ -208,7 +208,7 @@ paths:
       - Albums
   "/album/{id}":
     get:
-      operationId: AlbumController_findOne
+      operationId: findOne
       parameters:
       - name: id
         required: true
@@ -226,7 +226,7 @@ paths:
       tags:
       - Albums
     put:
-      operationId: AlbumController_update
+      operationId: update
       parameters:
       - name: id
         required: true
@@ -250,7 +250,7 @@ paths:
       tags:
       - Albums
     delete:
-      operationId: AlbumController_remove
+      operationId: remove
       parameters:
       - name: id
         required: true
@@ -269,7 +269,7 @@ paths:
       - Albums
   "/track":
     post:
-      operationId: TrackController_create
+      operationId: create
       parameters: []
       requestBody:
         required: true
@@ -286,7 +286,7 @@ paths:
       tags:
       - Tracks
     get:
-      operationId: TrackController_findAll
+      operationId: findAll
       parameters: []
       responses:
         '200':
@@ -296,7 +296,7 @@ paths:
       - Tracks
   "/track/{id}":
     get:
-      operationId: TrackController_findOne
+      operationId: findOne
       parameters:
       - name: id
         required: true
@@ -314,7 +314,7 @@ paths:
       tags:
       - Tracks
     put:
-      operationId: TrackController_update
+      operationId: update
       parameters:
       - name: id
         required: true
@@ -338,7 +338,7 @@ paths:
       tags:
       - Tracks
     delete:
-      operationId: TrackController_remove
+      operationId: remove
       parameters:
       - name: id
         required: true
@@ -357,7 +357,7 @@ paths:
       - Tracks
   "/favs":
     get:
-      operationId: FavsController_findAll
+      operationId: findAll
       parameters: []
       responses:
         '200':
@@ -367,7 +367,7 @@ paths:
       - Favorites
   "/favs/artist/{id}":
     post:
-      operationId: FavsController_addArtist
+      operationId: addArtist
       parameters:
       - name: id
         required: true
@@ -385,7 +385,7 @@ paths:
       tags:
       - Favorites
     delete:
-      operationId: FavsController_deleteArtist
+      operationId: deleteArtist
       parameters:
       - name: id
         required: true
@@ -404,7 +404,7 @@ paths:
       - Favorites
   "/favs/album/{id}":
     post:
-      operationId: FavsController_addAlbum
+      operationId: addAlbum
       parameters:
       - name: id
         required: true
@@ -422,7 +422,7 @@ paths:
       tags:
       - Favorites
     delete:
-      operationId: FavsController_deleteAlbum
+      operationId: deleteAlbum
       parameters:
       - name: id
         required: true
@@ -441,7 +441,7 @@ paths:
       - Favorites
   "/favs/track/{id}":
     post:
-      operationId: FavsController_addTrack
+      operationId: addTrack
       parameters:
       - name: id
         required: true
@@ -459,7 +459,7 @@ paths:
       tags:
       - Favorites
     delete:
-      operationId: FavsController_deleteTrack
+      operationId: deleteTrack
       parameters:
       - name: id
         required: true

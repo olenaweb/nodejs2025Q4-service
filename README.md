@@ -25,30 +25,29 @@ npm install --legacy-peer-deps
 ```
 
 ## Running application
-
+#### Development Mode
 ```
 npm run start:dev
 ```
-
+#### Production Mode
+```
+npm run start
+```
 1. Start the app (4000 as default) : http://localhost:4000
+   There is an accessible menu for viewing documentation.
 2. After starting the app on port (4000 as default) you can open
-   in your browser OpenAPI documentation by typing http://localhost:4000/doc/ or press the button "Open Docs" and check work of application.
+   in your browser OpenAPI documentation (Swagger UI) by typing http://localhost:4000/doc/ and check work of application or press the button "Swagger UI" .
+
 3. To test, click the "Try it out" button. If necessary, enter body and click the button "Execute".
-4. See doc\api.yaml - yaml documentation of the App
 
-5. For more information about OpenAPI/Swagger visit https://swagger.io/.
+4. See folder doc\api.yaml - yaml documentation of the App
+ or press the button "DOC Yaml" or type http://localhost:4000/doc-yaml/.
 
-6. On http://localhost:4000/doc-json enable json version of yaml
+5. For more information about OpenAPI/Swagger visit https://swagger.io/ and https://docs.nestjs.com/openapi/introduction
 
-7. Or download json by Powershell terminal :
 
-```
-   Invoke-WebRequest -Uri http://localhost:4000/doc-json -OutFile doc/openapi-check.json
-```
 
-8. You can also use Json-> Yaml online generator on site: https://www.bairesdev.com/tools/json2yaml/ to get actual Yaml documentation.
-
-## Testing
+## Testing (only after Server started!!!)
 
 #### !!! First start the server with the command:
 
@@ -123,7 +122,7 @@ This application includes 5 main modules:
    - You will receive a response with the created user (without password!)
 4. continue with others endpoints
 
-##### @Api Decorators: @ApiProperty; @ApiTags ; @ApiOperation ; @ApiResponse. See OpenAPI/Swagger documentation: http://localhost:4000/doc
+###### @Api Decorators: @ApiProperty; @ApiTags ; @ApiOperation ; @ApiResponse. See OpenAPI/Swagger documentation: http://localhost:4000/doc
 
 1. Adds field descriptions to Swagger documentation
    Shows example values.
