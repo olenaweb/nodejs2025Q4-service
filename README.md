@@ -206,23 +206,17 @@ http://localhost:4000/user
 http://localhost:4000/artist
 http://localhost:4000/album
 http://localhost:4000/track
-http://localhost:4000/favs/track
-http://localhost:4000/favs/artist
-http://localhost:4000/favs/album
+http://localhost:4000/favs/
 
 ```
 
 Get id
 
 ```
-http://localhost:4000/user/1c36162f-171c-464b-ac7f-a827bf40e21f
 http://localhost:4000/user/[id]
 http://localhost:4000/artist/[id]
 http://localhost:4000/album/[id]
 http://localhost:4000/track/[id]
-http://localhost:4000/favs/track/[id]
-http://localhost:4000/favs/artist/[id]
-http://localhost:4000/favs/album/[id]
 ```
 
 #### Example body with all fields or not:
