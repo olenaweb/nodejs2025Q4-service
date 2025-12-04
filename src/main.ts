@@ -49,7 +49,4 @@ async function bootstrap() {
   console.log(`✅ Swagger YAML: http://localhost:${port}/doc-yaml${EOL}`);
 }
 
-bootstrap().catch((error) => {
-  console.error('❌ Error starting application:', error);
-  process.exit(1);
-});
+bootstrap();

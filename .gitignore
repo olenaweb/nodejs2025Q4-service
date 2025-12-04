@@ -38,3 +38,5 @@ tutor
 .env
 .gitignore
 README.html
+
+/src/generated/prisma
