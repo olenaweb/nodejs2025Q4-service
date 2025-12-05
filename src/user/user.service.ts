@@ -5,40 +5,41 @@ import {
   BadRequestException,
   ForbiddenException,
 } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { User } from './entities/user.entity';
-import { randomUUID } from 'crypto';
 import { validate as uuidValidate } from 'uuid';
 
 @Injectable()
 export class UserService {
-  private users: User[] = [];
+  constructor(private prisma: PrismaService) {}
 
-  create(createUserDto: CreateUserDto): Omit<User, 'password'> {
-    const user: User = {
-      id: randomUUID(),
-      login: createUserDto.login,
-      password: createUserDto.password,
-      version: 1,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-    };
+  async create(createUserDto: CreateUserDto): Promise<Omit<User, 'password'>> {
+    const user = await this.prisma.user.create({
+      data: {
+        login: createUserDto.login,
+        password: createUserDto.password,
+      },
+    });
 
-    this.users.push(user);
     return this.excludePassword(user);
   }
 
-  findAll(): Omit<User, 'password'>[] {
-    return this.users.map((user) => this.excludePassword(user));
+  async findAll(): Promise<Omit<User, 'password'>[]> {
+    const users = await this.prisma.user.findMany();
+    return users.map((user) => this.excludePassword(user));
   }
 
-  findOne(id: string): Omit<User, 'password'> {
+  async findOne(id: string): Promise<Omit<User, 'password'>> {
     if (!uuidValidate(id)) {
       throw new BadRequestException('Invalid user ID (not UUID)');
     }
 
-    const user = this.users.find((u) => u.id === id);
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+    });
+
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -46,12 +47,15 @@ export class UserService {
     return this.excludePassword(user);
   }
 
-  update(id: string, updatePasswordDto: UpdatePasswordDto): Omit<User, 'password'> {
+  async update(id: string, updatePasswordDto: UpdatePasswordDto): Promise<Omit<User, 'password'>> {
     if (!uuidValidate(id)) {
       throw new BadRequestException('Invalid user ID (not UUID)');
     }
 
-    const user = this.users.find((u) => u.id === id);
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+    });
+
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -60,24 +64,33 @@ export class UserService {
       throw new ForbiddenException('Old password is wrong');
     }
 
-    user.password = updatePasswordDto.newPassword;
-    user.version += 1;
-    user.updatedAt = Date.now();
+    const updatedUser = await this.prisma.user.update({
+      where: { id },
+      data: {
+        password: updatePasswordDto.newPassword,
+        version: { increment: 1 },
+      },
+    });
 
-    return this.excludePassword(user);
+    return this.excludePassword(updatedUser);
   }
 
-  remove(id: string): void {
+  async remove(id: string): Promise<void> {
     if (!uuidValidate(id)) {
       throw new BadRequestException('Invalid user ID (not UUID)');
     }
 
-    const index = this.users.findIndex((u) => u.id === id);
-    if (index === -1) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!user) {
       throw new NotFoundException('User not found');
     }
 
-    this.users.splice(index, 1);
+    await this.prisma.user.delete({
+      where: { id },
+    });
   }
 
   private excludePassword(user: User): Omit<User, 'password'> {

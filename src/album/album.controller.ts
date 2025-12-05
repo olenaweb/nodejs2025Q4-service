@@ -25,14 +25,14 @@ export class AlbumController {
   @ApiOperation({ summary: 'Add new album' })
   @ApiResponse({ status: 201, description: 'Album created successfully' })
   @ApiResponse({ status: 400, description: 'Bad request. Invalid data' })
-  create(@Body() createAlbumDto: CreateAlbumDto) {
+  async create(@Body() createAlbumDto: CreateAlbumDto) {
     return this.albumService.create(createAlbumDto);
   }
 
   @Get()
   @ApiOperation({ summary: 'Get all albums' })
   @ApiResponse({ status: 200, description: 'Return all albums' })
-  findAll() {
+  async findAll() {
     return this.albumService.findAll();
   }
 
@@ -41,8 +41,8 @@ export class AlbumController {
   @ApiResponse({ status: 200, description: 'Return album by id' })
   @ApiResponse({ status: 400, description: 'Bad request. Invalid UUID' })
   @ApiResponse({ status: 404, description: 'Album not found' })
-  findOne(@Param('id') id: string) {
-    const album = this.albumService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    const album = await this.albumService.findOne(id);
     if (album === null) {
       if (!validate(id)) {
         throw new BadRequestException('Invalid UUID');
@@ -57,11 +57,11 @@ export class AlbumController {
   @ApiResponse({ status: 200, description: 'Album updated successfully' })
   @ApiResponse({ status: 400, description: 'Bad request. Invalid data' })
   @ApiResponse({ status: 404, description: 'Album not found' })
-  update(@Param('id') id: string, @Body() updateAlbumDto: UpdateAlbumDto) {
+  async update(@Param('id') id: string, @Body() updateAlbumDto: UpdateAlbumDto) {
     if (!validate(id)) {
       throw new BadRequestException('Invalid UUID');
     }
-    const album = this.albumService.update(id, updateAlbumDto);
+    const album = await this.albumService.update(id, updateAlbumDto);
     if (!album) {
       throw new NotFoundException('Album not found');
     }
@@ -74,11 +74,11 @@ export class AlbumController {
   @ApiResponse({ status: 204, description: 'Album deleted successfully' })
   @ApiResponse({ status: 400, description: 'Bad request. Invalid UUID' })
   @ApiResponse({ status: 404, description: 'Album not found' })
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     if (!validate(id)) {
       throw new BadRequestException('Invalid UUID');
     }
-    const deleted = this.albumService.remove(id);
+    const deleted = await this.albumService.remove(id);
     if (!deleted) {
       throw new NotFoundException('Album not found');
     }

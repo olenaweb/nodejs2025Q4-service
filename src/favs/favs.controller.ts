@@ -21,7 +21,7 @@ export class FavsController {
   @Get()
   @ApiOperation({ summary: 'Get all favorites' })
   @ApiResponse({ status: 200, description: 'Success' })
-  findAll() {
+  async findAll() {
     return this.favsService.findAll();
   }
 
@@ -30,11 +30,11 @@ export class FavsController {
   @ApiResponse({ status: 201, description: 'Added successfully' })
   @ApiResponse({ status: 400, description: 'Invalid UUID' })
   @ApiResponse({ status: 422, description: "Artist doesn't exist" })
-  addArtist(@Param('id') id: string) {
+  async addArtist(@Param('id') id: string) {
     if (!validate(id)) {
       throw new BadRequestException('Invalid UUID');
     }
-    const added = this.favsService.addArtist(id);
+    const added = await this.favsService.addArtist(id);
     if (!added) {
       throw new UnprocessableEntityException("Artist doesn't exist");
     }
@@ -47,11 +47,11 @@ export class FavsController {
   @ApiResponse({ status: 204, description: 'Deleted successfully' })
   @ApiResponse({ status: 400, description: 'Invalid UUID' })
   @ApiResponse({ status: 404, description: 'Artist not in favorites' })
-  deleteArtist(@Param('id') id: string) {
+  async deleteArtist(@Param('id') id: string) {
     if (!validate(id)) {
       throw new BadRequestException('Invalid UUID');
     }
-    const deleted = this.favsService.deleteArtist(id);
+    const deleted = await this.favsService.deleteArtist(id);
     if (!deleted) {
       throw new NotFoundException('Artist not in favorites');
     }
@@ -62,11 +62,11 @@ export class FavsController {
   @ApiResponse({ status: 201, description: 'Added successfully' })
   @ApiResponse({ status: 400, description: 'Invalid UUID' })
   @ApiResponse({ status: 422, description: "Album doesn't exist" })
-  addAlbum(@Param('id') id: string) {
+  async addAlbum(@Param('id') id: string) {
     if (!validate(id)) {
       throw new BadRequestException('Invalid UUID');
     }
-    const added = this.favsService.addAlbum(id);
+    const added = await this.favsService.addAlbum(id);
     if (!added) {
       throw new UnprocessableEntityException("Album doesn't exist");
     }
@@ -79,11 +79,11 @@ export class FavsController {
   @ApiResponse({ status: 204, description: 'Deleted successfully' })
   @ApiResponse({ status: 400, description: 'Invalid UUID' })
   @ApiResponse({ status: 404, description: 'Album not in favorites' })
-  deleteAlbum(@Param('id') id: string) {
+  async deleteAlbum(@Param('id') id: string) {
     if (!validate(id)) {
       throw new BadRequestException('Invalid UUID');
     }
-    const deleted = this.favsService.deleteAlbum(id);
+    const deleted = await this.favsService.deleteAlbum(id);
     if (!deleted) {
       throw new NotFoundException('Album not in favorites');
     }
@@ -94,11 +94,11 @@ export class FavsController {
   @ApiResponse({ status: 201, description: 'Added successfully' })
   @ApiResponse({ status: 400, description: 'Invalid UUID' })
   @ApiResponse({ status: 422, description: "Track doesn't exist" })
-  addTrack(@Param('id') id: string) {
+  async addTrack(@Param('id') id: string) {
     if (!validate(id)) {
       throw new BadRequestException('Invalid UUID');
     }
-    const added = this.favsService.addTrack(id);
+    const added = await this.favsService.addTrack(id);
     if (!added) {
       throw new UnprocessableEntityException("Track doesn't exist");
     }
@@ -111,11 +111,11 @@ export class FavsController {
   @ApiResponse({ status: 204, description: 'Deleted successfully' })
   @ApiResponse({ status: 400, description: 'Invalid UUID' })
   @ApiResponse({ status: 404, description: 'Track not in favorites' })
-  deleteTrack(@Param('id') id: string) {
+  async deleteTrack(@Param('id') id: string) {
     if (!validate(id)) {
       throw new BadRequestException('Invalid UUID');
     }
-    const deleted = this.favsService.deleteTrack(id);
+    const deleted = await this.favsService.deleteTrack(id);
     if (!deleted) {
       throw new NotFoundException('Track not in favorites');
     }

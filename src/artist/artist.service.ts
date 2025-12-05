@@ -1,6 +1,6 @@
 import { Injectable, Inject, forwardRef } from '@nestjs/common';
-import { randomUUID } from 'crypto';
 import { validate } from 'uuid';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { Artist } from './entities/artist.entity';
@@ -10,66 +10,72 @@ import { FavsService } from '../favs/favs.service';
 
 @Injectable()
 export class ArtistService {
-  private artists: Artist[] = [];
-
   constructor(
+    private readonly prisma: PrismaService,
     private readonly albumService: AlbumService,
     private readonly trackService: TrackService,
     @Inject(forwardRef(() => FavsService))
     private readonly favsService: FavsService,
   ) {}
 
-  create(createArtistDto: CreateArtistDto): Artist {
-    const artist: Artist = {
-      id: randomUUID(),
-      name: createArtistDto.name,
-      grammy: createArtistDto.grammy,
-    };
-    this.artists.push(artist);
-    return artist;
+  async create(createArtistDto: CreateArtistDto): Promise<Artist> {
+    return this.prisma.artist.create({
+      data: createArtistDto,
+    });
   }
 
-  findAll(): Artist[] {
-    return this.artists;
+  async findAll(): Promise<Artist[]> {
+    return this.prisma.artist.findMany();
   }
 
-  findOne(id: string): Artist | null {
+  async findOne(id: string): Promise<Artist | null> {
     if (!validate(id)) {
       return null;
     }
-    const artist = this.artists.find((a) => a.id === id);
-    return artist || null;
+    return this.prisma.artist.findUnique({
+      where: { id },
+    });
   }
 
-  update(id: string, updateArtistDto: UpdateArtistDto): Artist | null {
+  async update(id: string, updateArtistDto: UpdateArtistDto): Promise<Artist | null> {
     if (!validate(id)) {
       return null;
     }
-    const index = this.artists.findIndex((a) => a.id === id);
-    if (index === -1) {
+
+    const existing = await this.prisma.artist.findUnique({
+      where: { id },
+    });
+
+    if (!existing) {
       return null;
     }
-    this.artists[index] = {
-      ...this.artists[index],
-      ...updateArtistDto,
-    };
-    return this.artists[index];
+
+    return this.prisma.artist.update({
+      where: { id },
+      data: updateArtistDto,
+    });
   }
 
-  remove(id: string): boolean {
+  async remove(id: string): Promise<boolean> {
     if (!validate(id)) {
       return false;
     }
-    const index = this.artists.findIndex((a) => a.id === id);
-    if (index === -1) {
+
+    const existing = await this.prisma.artist.findUnique({
+      where: { id },
+    });
+
+    if (!existing) {
       return false;
     }
-    this.artists.splice(index, 1);
 
-    // Clear artist reference in albums, tracks and favorites
-    this.albumService.clearArtistId(id);
-    this.trackService.clearArtistId(id);
-    this.favsService.removeArtist(id);
+    // Delete artist (Prisma will handle CASCADE for albums/tracks via onDelete: SetNull)
+    await this.prisma.artist.delete({
+      where: { id },
+    });
+
+    // Remove from favorites
+    await this.favsService.removeArtist(id);
 
     return true;
   }

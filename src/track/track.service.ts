@@ -1,97 +1,113 @@
 import { Injectable, Inject, forwardRef } from '@nestjs/common';
+import { validate } from 'uuid';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { Track } from './entities/track.entity';
-import { randomUUID } from 'crypto';
-import { validate } from 'uuid';
 import { FavsService } from '../favs/favs.service';
 
 @Injectable()
 export class TrackService {
-  private tracks: Track[] = [];
-
   constructor(
+    private readonly prisma: PrismaService,
     @Inject(forwardRef(() => FavsService))
     private readonly favsService: FavsService,
   ) {}
 
-  create(createTrackDto: CreateTrackDto): Track {
-    const track: Track = {
-      id: randomUUID(),
-      name: createTrackDto.name,
-      artistId: createTrackDto.artistId || null,
-      albumId: createTrackDto.albumId || null,
-      duration: createTrackDto.duration,
-    };
-    this.tracks.push(track);
-    return track;
+  async create(createTrackDto: CreateTrackDto): Promise<Track> {
+    return this.prisma.track.create({
+      data: {
+        name: createTrackDto.name,
+        artistId: createTrackDto.artistId || null,
+        albumId: createTrackDto.albumId || null,
+        duration: createTrackDto.duration,
+      },
+    });
   }
 
-  findAll(): Track[] {
-    return this.tracks;
+  async findAll(): Promise<Track[]> {
+    return this.prisma.track.findMany();
   }
 
-  findOne(id: string): Track | null {
+  async findOne(id: string): Promise<Track | null> {
     if (!validate(id)) {
       return null;
     }
-    const track = this.tracks.find((t) => t.id === id);
-    return track || null;
+    return this.prisma.track.findUnique({
+      where: { id },
+    });
   }
 
-  update(id: string, updateTrackDto: UpdateTrackDto): Track | null {
+  async update(id: string, updateTrackDto: UpdateTrackDto): Promise<Track | null> {
     if (!validate(id)) {
       return null;
     }
-    const index = this.tracks.findIndex((t) => t.id === id);
-    if (index === -1) {
+
+    const existing = await this.prisma.track.findUnique({
+      where: { id },
+    });
+
+    if (!existing) {
       return null;
     }
 
-    this.tracks[index] = {
-      ...this.tracks[index],
-      ...updateTrackDto,
-      artistId:
-        updateTrackDto.artistId !== undefined
-          ? updateTrackDto.artistId || null
-          : this.tracks[index].artistId,
-      albumId:
-        updateTrackDto.albumId !== undefined
-          ? updateTrackDto.albumId || null
-          : this.tracks[index].albumId,
-    };
-    return this.tracks[index];
+    return this.prisma.track.update({
+      where: { id },
+      data: {
+        ...updateTrackDto,
+        artistId:
+          updateTrackDto.artistId !== undefined
+            ? updateTrackDto.artistId || null
+            : existing.artistId,
+        albumId:
+          updateTrackDto.albumId !== undefined ? updateTrackDto.albumId || null : existing.albumId,
+      },
+    });
   }
 
-  remove(id: string): boolean {
+  async remove(id: string): Promise<boolean> {
     if (!validate(id)) {
       return false;
     }
-    const index = this.tracks.findIndex((t) => t.id === id);
-    if (index === -1) {
+
+    const existing = await this.prisma.track.findUnique({
+      where: { id },
+    });
+
+    if (!existing) {
       return false;
     }
-    this.tracks.splice(index, 1);
 
-    // Clear track reference in favorites
-    this.favsService.removeTrack(id);
+    // Delete track
+    await this.prisma.track.delete({
+      where: { id },
+    });
+
+    // Remove from favorites
+    await this.favsService.removeTrack(id);
 
     return true;
   }
 
-  clearArtistId(artistId: string): void {
-    this.tracks.forEach((track) => {
-      if (track.artistId === artistId) {
-        track.artistId = null;
-      }
+  // Clear artistId reference when artist is deleted
+  // Not needed anymore - Prisma handles this with onDelete: SetNull
+  async clearArtistId(artistId: string): Promise<void> {
+    // This is now handled by Prisma's onDelete: SetNull
+    // But we keep the method for backward compatibility
+    await this.prisma.track.updateMany({
+      where: { artistId },
+      data: { artistId: null },
     });
   }
 
-  clearAlbumId(albumId: string): void {
-    this.tracks.forEach((track) => {
-      if (track.albumId === albumId) {
-        track.albumId = null;
-      }
+  // Clear albumId reference when album is deleted
+  // Not needed anymore - Prisma handles this with onDelete: SetNull
+  async clearAlbumId(albumId: string): Promise<void> {
+    // This is now handled by Prisma's onDelete: SetNull
+    // But we keep the method for backward compatibility
+    await this.prisma.track.updateMany({
+      where: { albumId },
+      data: { albumId: null },
     });
   }
 }

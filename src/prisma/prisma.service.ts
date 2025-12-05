@@ -36,7 +36,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     this.logger.log('Disconnected from database');
   }
 
-  // Helper method для очистки БД (для тестов)
+  // Helper method to clean the database (for tests)
   async cleanDatabase() {
     if (process.env.NODE_ENV === 'production') {
       throw new Error('Cannot clean database in production!');

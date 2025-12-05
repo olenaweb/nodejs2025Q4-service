@@ -1,6 +1,6 @@
 import { Injectable, Inject, forwardRef } from '@nestjs/common';
-import { randomUUID } from 'crypto';
 import { validate } from 'uuid';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { Album } from './entities/album.entity';
@@ -9,79 +9,93 @@ import { FavsService } from '../favs/favs.service';
 
 @Injectable()
 export class AlbumService {
-  private albums: Album[] = [];
-
   constructor(
+    private readonly prisma: PrismaService,
     private readonly trackService: TrackService,
     @Inject(forwardRef(() => FavsService))
     private readonly favsService: FavsService,
   ) {}
 
-  create(createAlbumDto: CreateAlbumDto): Album {
-    const album: Album = {
-      id: randomUUID(),
-      name: createAlbumDto.name,
-      year: createAlbumDto.year,
-      artistId: createAlbumDto.artistId || null,
-    };
-    this.albums.push(album);
-    return album;
+  async create(createAlbumDto: CreateAlbumDto): Promise<Album> {
+    return this.prisma.album.create({
+      data: {
+        name: createAlbumDto.name,
+        year: createAlbumDto.year,
+        artistId: createAlbumDto.artistId || null,
+      },
+    });
   }
 
-  findAll(): Album[] {
-    return this.albums;
+  async findAll(): Promise<Album[]> {
+    return this.prisma.album.findMany();
   }
 
-  findOne(id: string): Album | null {
+  async findOne(id: string): Promise<Album | null> {
     if (!validate(id)) {
       return null;
     }
-    const album = this.albums.find((a) => a.id === id);
-    return album || null;
+    return this.prisma.album.findUnique({
+      where: { id },
+    });
   }
 
-  update(id: string, updateAlbumDto: UpdateAlbumDto): Album | null {
+  async update(id: string, updateAlbumDto: UpdateAlbumDto): Promise<Album | null> {
     if (!validate(id)) {
       return null;
     }
-    const index = this.albums.findIndex((a) => a.id === id);
-    if (index === -1) {
+
+    const existing = await this.prisma.album.findUnique({
+      where: { id },
+    });
+
+    if (!existing) {
       return null;
     }
-    this.albums[index] = {
-      ...this.albums[index],
-      ...updateAlbumDto,
-      artistId:
-        updateAlbumDto.artistId !== undefined
-          ? updateAlbumDto.artistId || null
-          : this.albums[index].artistId,
-    };
-    return this.albums[index];
+
+    return this.prisma.album.update({
+      where: { id },
+      data: {
+        ...updateAlbumDto,
+        artistId:
+          updateAlbumDto.artistId !== undefined
+            ? updateAlbumDto.artistId || null
+            : existing.artistId,
+      },
+    });
   }
 
-  remove(id: string): boolean {
+  async remove(id: string): Promise<boolean> {
     if (!validate(id)) {
       return false;
     }
-    const index = this.albums.findIndex((a) => a.id === id);
-    if (index === -1) {
+
+    const existing = await this.prisma.album.findUnique({
+      where: { id },
+    });
+
+    if (!existing) {
       return false;
     }
-    this.albums.splice(index, 1);
 
-    // Clear album reference in tracks and favorites
-    this.trackService.clearAlbumId(id);
-    this.favsService.removeAlbum(id);
+    // Delete album (Prisma will handle CASCADE for tracks via onDelete: SetNull)
+    await this.prisma.album.delete({
+      where: { id },
+    });
+
+    // Remove from favorites
+    await this.favsService.removeAlbum(id);
 
     return true;
   }
 
   // Clear artistId reference when artist is deleted
-  clearArtistId(artistId: string): void {
-    this.albums.forEach((album) => {
-      if (album.artistId === artistId) {
-        album.artistId = null;
-      }
+  // Not needed anymore - Prisma handles this with onDelete: SetNull
+  async clearArtistId(artistId: string): Promise<void> {
+    // This is now handled by Prisma's onDelete: SetNull
+    // But we keep the method for backward compatibility
+    await this.prisma.album.updateMany({
+      where: { artistId },
+      data: { artistId: null },
     });
   }
 }

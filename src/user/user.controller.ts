@@ -23,14 +23,14 @@ export class UserController {
   @ApiOperation({ summary: 'Create user' })
   @ApiResponse({ status: 201, description: 'The user has been created.' })
   @ApiResponse({ status: 400, description: 'Bad request. Body does not contain required fields.' })
-  create(@Body() createUserDto: CreateUserDto) {
+  async create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
 
   @Get()
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({ status: 200, description: 'Successful operation' })
-  findAll() {
+  async findAll() {
     return this.userService.findAll();
   }
 
@@ -39,7 +39,7 @@ export class UserController {
   @ApiResponse({ status: 200, description: 'Successful operation' })
   @ApiResponse({ status: 400, description: 'Bad request. userId is invalid (not uuid)' })
   @ApiResponse({ status: 404, description: 'User not found' })
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.userService.findOne(id);
   }
 
@@ -49,7 +49,7 @@ export class UserController {
   @ApiResponse({ status: 400, description: 'Bad request. userId is invalid (not uuid)' })
   @ApiResponse({ status: 403, description: 'oldPassword is wrong' })
   @ApiResponse({ status: 404, description: 'User not found' })
-  update(@Param('id') id: string, @Body() updatePasswordDto: UpdatePasswordDto) {
+  async update(@Param('id') id: string, @Body() updatePasswordDto: UpdatePasswordDto) {
     return this.userService.update(id, updatePasswordDto);
   }
 
@@ -59,7 +59,7 @@ export class UserController {
   @ApiResponse({ status: 204, description: 'The user has been deleted' })
   @ApiResponse({ status: 400, description: 'Bad request. userId is invalid (not uuid)' })
   @ApiResponse({ status: 404, description: 'User not found' })
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.userService.remove(id);
   }
 }

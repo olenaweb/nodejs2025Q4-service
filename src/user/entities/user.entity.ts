@@ -27,13 +27,13 @@ export class User {
 
   @ApiProperty({
     description: 'Timestamp of creation',
-    example: 1655000000,
+    example: '2024-12-04T10:00:00.000Z',
   })
-  createdAt: number;
+  createdAt: Date;
 
   @ApiProperty({
     description: 'Timestamp of last update',
-    example: 1655000000,
+    example: '2024-12-04T10:00:00.000Z',
   })
-  updatedAt: number;
+  updatedAt: Date;
 }
