@@ -21,7 +21,6 @@ tutor
 .prettierrc
 .prettierignore
 jest.config.json
-nest-cli.json
 README.md
 Dockerfile
 docker-compose*.yml

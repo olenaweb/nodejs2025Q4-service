@@ -88,6 +88,36 @@ docker-compose restart
 
 ```
 
+### Development Features
+
+#### 🔄 Hot-Reload (Auto-restart on file changes)
+
+The application automatically restarts when you modify files in the `src` folder. This is achieved through:
+
+- **Volume mounting**: `./src` is mounted to `/app/src` in the container
+- **Watch mode**: NestJS `--watch` flag monitors file changes
+- Changes are detected and the app rebuilds/restarts automatically
+
+#### 🔁 Auto-restart after crash
+
+Containers automatically restart if they crash:
+
+- **Policy**: `restart: unless-stopped` in docker-compose.yml
+- Applies to both `app` and `postgres` containers
+- Containers won't restart if manually stopped with `docker-compose stop`
+
+#### 🔐 Environment Variables
+
+All database connection variables are stored in `.env`:
+
+- `POSTGRES_USER` - Database user
+- `POSTGRES_PASSWORD` - Database password
+- `POSTGRES_DB` - Database name
+- `POSTGRES_PORT` - Database port (5432)
+- `DATABASE_URL` - Full connection string (auto-constructed from above variables)
+
+**Note**: The `.env` file is git-ignored. Copy `.env.example` to `.env` and configure your values.
+
 ### PostgreSQL Logs
 
 ```powershell

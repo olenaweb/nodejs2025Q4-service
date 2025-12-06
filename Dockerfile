@@ -40,13 +40,25 @@ RUN apk add --no-cache openssl libc6-compat
 
 WORKDIR /app
 
+# Copy package.json first
+COPY --from=builder /app/package*.json ./
+
 # Copy production dependencies from the first stage
 COPY --from=dependencies /app/node_modules ./node_modules
-COPY --from=dependencies /app/package*.json ./
+
+# Install dev dependencies for watch mode in development
+RUN npm install --legacy-peer-deps
 
 # Copy built code from the second stage
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
+
+# Copy source code and config files for development hot-reload
+COPY --from=builder /app/src ./src
+COPY --from=builder /app/nest-cli.json ./
+COPY --from=builder /app/nodemon.json ./
+COPY --from=builder /app/tsconfig.json ./
+COPY --from=builder /app/tsconfig.build.json ./
 
 # Expose port
 EXPOSE 4000

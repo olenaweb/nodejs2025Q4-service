@@ -36,18 +36,18 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      NODE_ENV: development
-      PORT: 4000
-      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/home_library?schema=public
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: ${PORT:-4000}
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public
       DATABASE_LOGGING: ${DATABASE_LOGGING:-false}
     ports:
-      - '4000:4000'
+      - '${PORT:-4000}:4000'
     volumes:
       - ./src:/app/src
       - ./prisma:/app/prisma
     networks:
       - home-library-network
-    command: node dist/src/main.js
+    command: npm run start:dev
 
 # Named volumes
 volumes:
