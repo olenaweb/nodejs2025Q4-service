@@ -52,6 +52,7 @@ RUN npm install --legacy-peer-deps
 # Copy built code from the second stage
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/prisma.config.ts ./
 
 # Copy source code and config files for development hot-reload
 COPY --from=builder /app/src ./src

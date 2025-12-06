@@ -13,7 +13,7 @@
   },
   "scripts": {
     "build": "nest build",
-    "start": "docker-compose up -d --build",
+    "start": "docker-compose down && docker-compose up -d --build",
     "start:dev": "nodemon",
     "logs": "docker-compose logs -f app",
     "docker:check:db": "docker scout cves olenaweb/postgres-db",
