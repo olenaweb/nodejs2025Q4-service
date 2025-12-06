@@ -15,6 +15,8 @@
     "build": "nest build",
     "start": "docker-compose down && docker-compose up -d --build",
     "start:dev": "nodemon",
+    "down": "docker-compose down",
+    "up": "docker-compose up -d",
     "logs": "docker-compose logs -f app",
     "docker:check:db": "docker scout cves olenaweb/postgres-db",
     "docker:check:library": "docker scout cves olenaweb/rss-home-library",

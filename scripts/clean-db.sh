@@ -1,5 +1,5 @@
 #!/bin/bash
-# Скрипт для очистки базы данных перед запуском тестов
+# Script for cleaning the database before running tests
 
 echo "🗑️  Database Cleanup..."
 docker exec home-library-postgres psql -U postgres -d home_library -c "TRUNCATE TABLE users, artists, albums, tracks, favorites, favorite_artists, favorite_albums, favorite_tracks RESTART IDENTITY CASCADE;"
