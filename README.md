@@ -24,7 +24,25 @@ The --legacy-peer-deps flag is used to resolve dependency version conflicts.
 npm install --legacy-peer-deps
 ```
 
-## Running application
+## Check application
+
+```powershell
+# 1. rename .env.example to .env
+# 2. start Docker Desktop in your OS
+# 3. create and run containers
+npm run start
+# 4. see logs of server in real time
+npm run logs
+# check http://localhost:4000/
+# change head in nodejs2025Q4-service\src\app.service.ts "RSS Home Library Service 2025 Q4 🚀"
+# check http://localhost:4000/ - refresh the browser page, the title has changed in real time
+
+# check tests
+npm run test:clean
+
+```
+
+## Commands for Run of application
 
 #### !!! Important . First of all : Start Docker Desktop in Your OS
 
@@ -125,7 +143,7 @@ All database connection variables are stored in `.env`:
 docker-compose ps postgres
 # logs
 docker-compose logs postgres
-# statisc
+# statistics
 docker stats home-library-app home-library-postgres
 # restart DB
 docker-compose restart postgres
