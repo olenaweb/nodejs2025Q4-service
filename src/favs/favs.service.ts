@@ -64,8 +64,13 @@ export class FavsService implements OnModuleInit {
 
   // Artist methods
   async addArtist(id: string): Promise<boolean> {
-    const artist = await this.artistService.findOne(id);
-    if (!artist) {
+    try {
+      const artist = await this.artistService.findOne(id);
+      if (!artist) {
+        return false;
+      }
+    } catch {
+      // Artist not found
       return false;
     }
 
@@ -126,8 +131,13 @@ export class FavsService implements OnModuleInit {
 
   // Album methods
   async addAlbum(id: string): Promise<boolean> {
-    const album = await this.albumService.findOne(id);
-    if (!album) {
+    try {
+      const album = await this.albumService.findOne(id);
+      if (!album) {
+        return false;
+      }
+    } catch {
+      // Album not found
       return false;
     }
 
@@ -188,8 +198,13 @@ export class FavsService implements OnModuleInit {
 
   // Track methods
   async addTrack(id: string): Promise<boolean> {
-    const track = await this.trackService.findOne(id);
-    if (!track) {
+    try {
+      const track = await this.trackService.findOne(id);
+      if (!track) {
+        return false;
+      }
+    } catch {
+      // Track not found
       return false;
     }
 

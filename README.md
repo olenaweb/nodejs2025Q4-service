@@ -10,7 +10,7 @@
 ```
 git clone https://github.com/olenaweb/nodejs2025Q4-service.git
 cd nodejs2025Q4-service
-git checkout -b dev-part1 origin/dev-part1
+git checkout -b dev-part2 origin/dev-part2
 
 ```
 
@@ -26,16 +26,86 @@ npm install --legacy-peer-deps
 
 ## Running application
 
-#### Development Mode
+#### First of all : Start Docker Desktop in Your OS
+
+```powershell
+docker-compose up -d --build
+# server log at real time:
+docker-compose logs -f app
 
 ```
-npm run start:dev
-```
 
-#### Production Mode
+### Stop
 
 ```
-npm run start
+docker-compose down
+```
+
+### Stop with removed volumes and network. Dont do it without reason!!!
+
+```
+docker-compose down -v
+```
+
+**⚠️ IMPORTANT:** After `docker-compose down -v`, database tables are deleted! You need to apply migrations:
+
+```powershell
+# Reassembly
+docker-compose up -d --build
+```
+
+then
+
+```powershell
+# Windows PowerShell
+$env:DATABASE_URL="postgresql://postgres:postgres@localhost:5432/home_library?schema=public"; npx prisma migrate deploy
+
+# Linux/Mac
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/home_library?schema=public" npx prisma migrate deploy
+
+# Then restart application
+docker-compose restart app
+```
+
+#### The tables are in:
+
+Where are the tables stored?
+
+###### Tables are stored in Docker volume pgdata
+Volume is mounted to: /var/lib/postgresql/data inside the container
+Contains: All tables, indexes, PostgreSQL data
+Docker-compose down -v removes all volumes
+Therefore, you need to re-apply the migrations
+
+### Start , Restart
+
+```powershell
+# start
+docker-compose up -d
+# restart
+docker-compose restart
+
+```
+
+### PostgreSQL Logs
+
+```powershell
+# status
+docker-compose ps postgres
+# logs
+docker-compose logs postgres
+# statisc
+docker stats home-library-app home-library-postgres
+# restart DB
+docker-compose restart postgres
+
+```
+
+### Container status
+
+```
+docker-compose ps
+
 ```
 
 1. Start the app (4000 as default) : http://localhost:4000
@@ -43,46 +113,13 @@ npm run start
 2. After starting the app on port (4000 as default) you can open
    in your browser OpenAPI documentation (Swagger UI) by typing http://localhost:4000/doc/ and check work of application or press the button "Swagger UI" .
 
-3. To test, click the "Try it out" button. If necessary, enter body and click the button "Execute".
-
-4. See folder doc\api.yaml - yaml documentation of the App
-   or press the button "DOC Yaml" or type http://localhost:4000/doc-yaml/.
-
-5. For more information about OpenAPI/Swagger visit https://swagger.io/ and https://docs.nestjs.com/openapi/introduction
-
 ## Testing (only after Server started!!!)
 
-#### !!! First start the server with the command:
-
-```
-npm run start
-```
-
-After application running open new terminal and enter:
-
-To run all tests (67 tests should pass)
-
-```
-npm run test
-```
-
-To run only one of all test suites
-
-```
-npm run test -- <path to suite>
-```
-
-example:
-
-```
-npm test -- test/users.e2e.spec.ts
-
-npm test -- test/artists.e2e.spec.ts
-
-npm test -- test/albums.e2e.spec.ts
-
-npm test -- test/tracks.e2e.spec.ts
-
+```powershell
+npm run test:clean
+# or
+npm run clean:db  # Clears tables and preserves structure
+npm test
 ```
 
 ### Auto-fix and format
@@ -124,140 +161,3 @@ This application includes 5 main modules:
    - Click "Execute"
    - You will receive a response with the created user (without password!)
 4. continue with others endpoints
-
-###### @Api Decorators: @ApiProperty; @ApiTags ; @ApiOperation ; @ApiResponse. See OpenAPI/Swagger documentation: http://localhost:4000/doc
-
-1. Adds field descriptions to Swagger documentation
-   Shows example values.
-2. Helps you understand what each field means.
-3. In CreateUserDto and other DTO , in Controllers -> @Api Decorators used for OpenAPI/Swagger documentation.
-
-#### USER
-
-**Example endpoints:**
-
-- `POST http://localhost:4000/user` - create user
-- `GET http://localhost:4000/user` - all users
-- `GET http://localhost:4000/user/123e4567-e89b-12d3-a456-426614174000` - one user
-- `PUT http://localhost:4000/user/123e4567-e89b-12d3-a456-426614174000` - renew password
-- `DELETE http://localhost:4000/user/123e4567-e89b-12d3-a456-426614174000` - delete user
-
-###### Check on bash terminal
-
-1. all users
-
-```
-curl -X 'GET' \
- 'http://localhost:4000/user' \
- -H 'accept: */*'
-```
-
-2. create user
-
-```
-   curl -X 'POST' \
-    'http://localhost:4000/user' \
-    -H 'accept: */*' \
-    -H 'Content-Type: application/json' \
-    -d '{
-   "login": "TestUser",
-   "password": "Password_123"
-   }'
-```
-
-3. get user with id
-   Id from real user , see http://localhost:4000/user
-
-```
-   curl -X 'GET' \
-    'http://localhost:4000/user/71da8eb5-5bf7-4204-a023-986089609144' \
-    -H 'accept: */*'
-```
-
-4. change password : Password_123 ->newPassword_123
-
-```
-   curl -X 'PUT' \
-    'http://localhost:4000/user/71da8eb5-5bf7-4204-a023-986089609144' \
-    -H 'accept: */*' \
-    -H 'Content-Type: application/json' \
-    -d '{
-   "oldPassword": "Password_123",
-   "newPassword": "newPassword_123"
-   }'
-```
-
-5. delete user
-
-```
-   curl -X 'DELETE' \
-    'http://localhost:4000/user/597f7ecf-d67f-4e8f-ada2-f1d51cba1d5e' \
-    -H 'accept: */*'
-```
-
-###### You can continue do it for others endpoints (artist, album, track, favs) or check using Swagger site http://localhost:4000/doc (press button "Try it out",then button "Execute")
-
-#### Browser
-
-Get
-
-```
-http://localhost:4000/user
-http://localhost:4000/artist
-http://localhost:4000/album
-http://localhost:4000/track
-http://localhost:4000/favs/
-
-```
-
-Get id
-
-```
-http://localhost:4000/user/[id]
-http://localhost:4000/artist/[id]
-http://localhost:4000/album/[id]
-http://localhost:4000/track/[id]
-```
-
-#### Example body with all fields or not:
-
-###### Album Innuendo
-
-```
-{
-"name": "Innuendo",
-"year": 1991,
-"artistId": "b2c3d4e5-f6a7-8901-bcde-f12345678901"
-}
-```
-
-###### Answer :
-
-```
-{
-"id": "04e66221-0410-4a67-8d37-c7f8f5022e1b",
-"name": "Innuendo",
-"year": 1991,
-"artistId": "b2c3d4e5-f6a7-8901-bcde-f12345678901"
-}
-```
-
-###### Unknown album
-
-```
-{
-"name": "Unknown Album",
-"year": 2020
-}
-```
-
-###### Answer :
-
-```
-{
-"id": "04e66221-0410-4a67-8d37-c7f8f5022e1b",
-"name": "Unknown Album",
-"year": 2020,
-"artistId": null
-}
-```

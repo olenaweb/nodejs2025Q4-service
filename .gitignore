@@ -40,4 +40,4 @@ tutor
 .gitignore
 README.html
 
-/src/generated/prisma
+/scripts/README.md

@@ -2,7 +2,7 @@
 FROM postgres:17.5-alpine3.21
 
 # metadata (optional)
-LABEL maintainer="olena olena.nevzorova@gmail.com>"
+LABEL maintainer="olenaweb olena.nevzorova@gmail.com>"
 
 # Copy initialization scripts (if any)
 # Place sql scripts or .sh files in ./db/init

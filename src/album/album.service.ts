@@ -4,14 +4,14 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { Album } from './entities/album.entity';
-import { TrackService } from '../track/track.service';
+// import { TrackService } from '../track/track.service';
 import { FavsService } from '../favs/favs.service';
 
 @Injectable()
 export class AlbumService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly trackService: TrackService,
+    // private readonly trackService: TrackService,
     @Inject(forwardRef(() => FavsService))
     private readonly favsService: FavsService,
   ) {}
@@ -82,7 +82,6 @@ export class AlbumService {
       where: { id },
     });
 
-    // Remove from favorites
     await this.favsService.removeAlbum(id);
 
     return true;
@@ -90,9 +89,8 @@ export class AlbumService {
 
   // Clear artistId reference when artist is deleted
   // Not needed anymore - Prisma handles this with onDelete: SetNull
+  // Keeped the method for backward compatibility
   async clearArtistId(artistId: string): Promise<void> {
-    // This is now handled by Prisma's onDelete: SetNull
-    // But we keep the method for backward compatibility
     await this.prisma.album.updateMany({
       where: { artistId },
       data: { artistId: null },

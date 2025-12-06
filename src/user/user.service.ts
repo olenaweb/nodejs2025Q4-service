@@ -11,11 +11,25 @@ import { UpdatePasswordDto } from './dto/update-password.dto';
 import { User } from './entities/user.entity';
 import { validate as uuidValidate } from 'uuid';
 
+// used timestamp instead of Date
+type UserResponse = Omit<User, 'password' | 'createdAt' | 'updatedAt'> & {
+  createdAt: number;
+  updatedAt: number;
+};
+
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createUserDto: CreateUserDto): Promise<Omit<User, 'password'>> {
+  async create(createUserDto: CreateUserDto): Promise<UserResponse> {
+    const existingUser = await this.prisma.user.findUnique({
+      where: { login: createUserDto.login },
+    });
+
+    if (existingUser) {
+      throw new BadRequestException(`User with login "${createUserDto.login}" already exists`);
+    }
+
     const user = await this.prisma.user.create({
       data: {
         login: createUserDto.login,
@@ -26,12 +40,12 @@ export class UserService {
     return this.excludePassword(user);
   }
 
-  async findAll(): Promise<Omit<User, 'password'>[]> {
+  async findAll(): Promise<UserResponse[]> {
     const users = await this.prisma.user.findMany();
     return users.map((user) => this.excludePassword(user));
   }
 
-  async findOne(id: string): Promise<Omit<User, 'password'>> {
+  async findOne(id: string): Promise<UserResponse> {
     if (!uuidValidate(id)) {
       throw new BadRequestException('Invalid user ID (not UUID)');
     }
@@ -47,7 +61,7 @@ export class UserService {
     return this.excludePassword(user);
   }
 
-  async update(id: string, updatePasswordDto: UpdatePasswordDto): Promise<Omit<User, 'password'>> {
+  async update(id: string, updatePasswordDto: UpdatePasswordDto): Promise<UserResponse> {
     if (!uuidValidate(id)) {
       throw new BadRequestException('Invalid user ID (not UUID)');
     }
@@ -93,7 +107,13 @@ export class UserService {
     });
   }
 
-  private excludePassword(user: User): Omit<User, 'password'> {
-    return omitKeys(user, 'password');
+  private excludePassword(user: User): UserResponse {
+    const userWithoutPassword = omitKeys(user, 'password');
+    // Convert Date to timestamp (number)
+    return {
+      ...userWithoutPassword,
+      createdAt: userWithoutPassword.createdAt.getTime(),
+      updatedAt: userWithoutPassword.updatedAt.getTime(),
+    };
   }
 }
