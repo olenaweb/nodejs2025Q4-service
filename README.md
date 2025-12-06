@@ -26,7 +26,7 @@ npm install --legacy-peer-deps
 
 ## Running application
 
-#### First of all : Start Docker Desktop in Your OS
+#### !!! Important . First of all : Start Docker Desktop in Your OS
 
 ```powershell
 docker-compose up -d --build
@@ -72,6 +72,7 @@ docker-compose restart app
 Where are the tables stored?
 
 ###### Tables are stored in Docker volume pgdata
+
 Volume is mounted to: /var/lib/postgresql/data inside the container
 Contains: All tables, indexes, PostgreSQL data
 Docker-compose down -v removes all volumes
@@ -112,6 +113,14 @@ docker-compose ps
    There is an accessible menu for viewing documentation.
 2. After starting the app on port (4000 as default) you can open
    in your browser OpenAPI documentation (Swagger UI) by typing http://localhost:4000/doc/ and check work of application or press the button "Swagger UI" .
+
+## Docker images size
+
+```powershel
+docker images
+# olenaweb/postgres-db:latest            bdca0ec26ac6        398MB          111MB    U
+# olenaweb/rss-home-library:latest       4e7dba8de754        387MB         84.2MB    U
+```
 
 ## Testing (only after Server started!!!)
 

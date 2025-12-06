@@ -78,12 +78,10 @@ export class TrackService {
       return false;
     }
 
-    // Delete track
     await this.prisma.track.delete({
       where: { id },
     });
 
-    // Remove from favorites
     await this.favsService.removeTrack(id);
 
     return true;
@@ -91,9 +89,8 @@ export class TrackService {
 
   // Clear artistId reference when artist is deleted
   // Not needed anymore - Prisma handles this with onDelete: SetNull
+  // keeped the method for backward compatibility
   async clearArtistId(artistId: string): Promise<void> {
-    // This is now handled by Prisma's onDelete: SetNull
-    // But we keep the method for backward compatibility
     await this.prisma.track.updateMany({
       where: { artistId },
       data: { artistId: null },
@@ -102,9 +99,8 @@ export class TrackService {
 
   // Clear albumId reference when album is deleted
   // Not needed anymore - Prisma handles this with onDelete: SetNull
+  // keeped the method for backward compatibility
   async clearAlbumId(albumId: string): Promise<void> {
-    // This is now handled by Prisma's onDelete: SetNull
-    // But we keep the method for backward compatibility
     await this.prisma.track.updateMany({
       where: { albumId },
       data: { albumId: null },

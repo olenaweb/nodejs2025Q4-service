@@ -12,23 +12,17 @@
     "buffer-equal-constant-time": "1.0.1"
   },
   "scripts": {
-    "prebuild": "rimraf dist",
     "build": "nest build",
+    "start": "docker-compose up -d --build",
+    "logs": "docker-compose logs -f app",
+    "docker:check:db": "docker scout cves olenaweb/postgres-db",
+    "docker:check:library": "docker scout cves olenaweb/rss-home-library",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
-    "start:dev": "nest start --watch",
-    "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "clean:db": "powershell -ExecutionPolicy Bypass -File ./scripts/clean-db.ps1",
     "clean:db:sh": "bash ./scripts/clean-db.sh",
     "test": "jest --testMatch \"<rootDir>/*.spec.ts\" --noStackTrace --runInBand",
-    "test:clean": "npm run clean:db && npm test",
-    "test:auth": "cross-env TEST_MODE=auth jest --testPathIgnorePatterns refresh.e2e.spec.ts --noStackTrace --runInBand",
-    "test:refresh": "cross-env TEST_MODE=auth jest --testPathPattern refresh.e2e.spec.ts --noStackTrace --runInBand",
-    "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand"
+    "test:clean": "npm run clean:db && npm test"
   },
   "dependencies": {
     "@nestjs/common": "^10.4.16",
