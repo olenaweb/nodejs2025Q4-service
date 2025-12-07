@@ -3,6 +3,18 @@
   "rootDir": "test",
   "testEnvironment": "node",
   "transform": {
-    "^.+\\.(t|j)s$": "ts-jest"
-  }
+    "^.+\\.ts$": [
+      "ts-jest",
+      {
+        "tsconfig": {
+          "esModuleInterop": true,
+          "allowSyntheticDefaultImports": true
+        },
+        "diagnostics": {
+          "warnOnly": true
+        }
+      }
+    ]
+  },
+  "testMatch": ["<rootDir>/*.spec.ts"]
 }

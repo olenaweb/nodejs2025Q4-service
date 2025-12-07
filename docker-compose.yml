@@ -1,0 +1,65 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    build:
+      context: .
+      dockerfile: postgres/Dockerfile
+    image: olenaweb/postgres-db:latest
+    container_name: home-library-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+    # Internaly port in contaner 5420
+        - '${POSTGRES_PORT}:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - postgres-logs:/var/lib/postgresql/log
+    networks:
+      - home-library-network
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # NestJS Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: olenaweb/rss-home-library:latest
+    container_name: home-library-app
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+    # Externally, the port is taken from .env, and if it is not there, 4000 is used
+      PORT: ${PORT:-4000}
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public
+      DATABASE_LOGGING: ${DATABASE_LOGGING:-false}
+    ports:
+    # Internaly port in contaner 4000
+      - '${PORT:-4000}:4000'
+    volumes:
+      - ./src:/app/src
+      - ./prisma:/app/prisma
+    networks:
+      - home-library-network
+    command: sh -c "npx prisma migrate deploy --config prisma.config.ts && npm run start:dev"
+
+# Named volumes
+volumes:
+  pgdata:
+    driver: local
+  postgres-logs:
+    driver: local
+
+# Custom bridge network
+networks:
+  home-library-network:
+    driver: bridge
