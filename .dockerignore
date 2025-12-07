@@ -8,7 +8,7 @@ dist
 doc
 *.log
 npm-debug.log
-Dockerfile.db
+postgres/Dockerfile
 Dockerfile
 docker-compose.override.yml
 .vscode
