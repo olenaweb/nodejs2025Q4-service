@@ -48,6 +48,8 @@ npm run docker:check:library
 # 8. Auto-fix and format
 npm run lint
 npm run format
+# 9. check network
+docker network inspect nodejs2025q4-service_home-library-network  
 
 ```
 
