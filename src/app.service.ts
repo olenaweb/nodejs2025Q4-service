@@ -27,7 +27,7 @@ export class AppService {
     color: #2b6cb0;
     margin-bottom: 10px;
   ">
-    RSS Home Library Service 2025 Q4 🚀
+    RSS Home Library Service 2025 Q4
   </h1>
 
   <p style="font-size: 16px; margin: 0 0 25px; color: #555;">

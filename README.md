@@ -45,6 +45,9 @@ npm run test:clean
 # 7. NPM script for vulnerabilities scanning
 npm run docker:check:db
 npm run docker:check:library
+# 8. Auto-fix and format
+npm run lint
+npm run format
 
 ```
 
@@ -95,17 +98,17 @@ Expected output:
 
 **Total Basic Scope: 100/100 ✅**
 
-### ✅ Advanced Scope (90 points)
+### ✅ Advanced Scope (130 points)
 
 #### Containerization, Docker
 
 | Requirement                             | Points | Status | Implementation                                                                                                                                         |
 | --------------------------------------- | ------ | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Image size < 500 MB                     | +20    | ✅     | postgres-db: 398MB ✅, rss-home-library: 346.7MB in prodmode, 963MB in devmode                                                                         |
+| Image size < 500 MB                     | +20    | ✅     | postgres-db: 105.6 MB , rss-home-library: 204.5 MB    [olenaweb/rss-home-library](https://hub.docker.com/r/olenaweb/rss-home-library) [olenaweb/postgres-db](https://hub.docker.com/r/olenaweb/postgres-db)                                                                                                        |
 | NPM script for vulnerabilities scanning | +10    | ✅     | `npm run docker:check:db` and `npm run docker:check:library`                                                                                           |
 | Image pushed to DockerHub               | +20    | ✅     | [olenaweb/postgres-db](https://hub.docker.com/r/olenaweb/postgres-db), [olenaweb/rss-home-library](https://hub.docker.com/r/olenaweb/rss-home-library) |
 
-**Note:** \*App image is 963MB because it includes devDependencies (nodemon, @nestjs/cli, typescript) for hot-reload functionality required by the task. Production-only build 346.7MB.
+**Note:** \*App image includes devDependencies (nodemon, @nestjs/cli, typescript) for hot-reload functionality required by the task. 
 
 #### Database & ORM
 
@@ -116,7 +119,7 @@ Expected output:
 | Prisma relations between entities       | +10    | ✅     | Artist↔Album↔Track, Favorites many-to-many             |
 | PostgreSQL in Docker (no local install) | +30    | ✅     | postgres:17-alpine container with healthcheck          |
 
-**Total Advanced Scope: 90/90 ✅**
+**Total Advanced Scope: 130/130 ✅**
 
 ### ✅ Forfeits Check (0 penalties)
 
@@ -131,7 +134,7 @@ Expected output:
 
 ---
 
-**Final Score: 320/320 points**
+**Final Score: 360/360 points**
 
 ## Commands for Run of application
 
@@ -253,13 +256,13 @@ docker-compose ps
 2. After starting the app on port (4000 as default) you can open
    in your browser OpenAPI documentation (Swagger UI) by typing http://localhost:4000/doc/ and check work of application or press the button "Swagger UI" .
 
-## Docker images size in production mode
+## Docker images size
 
 ###### in Docker Desktop
 
 ```
-olenaweb/home-library-postgres:latest 398MB
-olenaweb/rss-home-library:latest      346.7MB
+olenaweb/home-library-postgres:latest 105.6 MB
+olenaweb/rss-home-library:latest      204.5 MB
 ```
 
 ## Testing (only after Server started!!!)
