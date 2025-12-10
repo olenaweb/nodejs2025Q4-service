@@ -7,11 +7,9 @@ import {
   Param,
   Delete,
   HttpCode,
-  NotFoundException,
-  BadRequestException,
+  HttpStatus,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { validate } from 'uuid';
 import { AlbumService } from './album.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
@@ -22,6 +20,7 @@ export class AlbumController {
   constructor(private readonly albumService: AlbumService) {}
 
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Add new album' })
   @ApiResponse({ status: 201, description: 'Album created successfully' })
   @ApiResponse({ status: 400, description: 'Bad request. Invalid data' })
@@ -42,14 +41,7 @@ export class AlbumController {
   @ApiResponse({ status: 400, description: 'Bad request. Invalid UUID' })
   @ApiResponse({ status: 404, description: 'Album not found' })
   async findOne(@Param('id') id: string) {
-    const album = await this.albumService.findOne(id);
-    if (album === null) {
-      if (!validate(id)) {
-        throw new BadRequestException('Invalid UUID');
-      }
-      throw new NotFoundException('Album not found');
-    }
-    return album;
+    return this.albumService.findOne(id);
   }
 
   @Put(':id')
@@ -58,29 +50,16 @@ export class AlbumController {
   @ApiResponse({ status: 400, description: 'Bad request. Invalid data' })
   @ApiResponse({ status: 404, description: 'Album not found' })
   async update(@Param('id') id: string, @Body() updateAlbumDto: UpdateAlbumDto) {
-    if (!validate(id)) {
-      throw new BadRequestException('Invalid UUID');
-    }
-    const album = await this.albumService.update(id, updateAlbumDto);
-    if (!album) {
-      throw new NotFoundException('Album not found');
-    }
-    return album;
+    return this.albumService.update(id, updateAlbumDto);
   }
 
   @Delete(':id')
-  @HttpCode(204)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete album' })
   @ApiResponse({ status: 204, description: 'Album deleted successfully' })
   @ApiResponse({ status: 400, description: 'Bad request. Invalid UUID' })
   @ApiResponse({ status: 404, description: 'Album not found' })
   async remove(@Param('id') id: string) {
-    if (!validate(id)) {
-      throw new BadRequestException('Invalid UUID');
-    }
-    const deleted = await this.albumService.remove(id);
-    if (!deleted) {
-      throw new NotFoundException('Album not found');
-    }
+    return this.albumService.remove(id);
   }
 }

@@ -1,4 +1,10 @@
-import { Injectable, Inject, forwardRef } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  forwardRef,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { validate } from 'uuid';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
@@ -36,28 +42,28 @@ export class AlbumService {
     return albums;
   }
 
-  async findOne(id: string): Promise<Album | null> {
+  async findOne(id: string): Promise<Album> {
     this.logger.debug(`Fetching album by ID: ${id}`, 'AlbumService');
     if (!validate(id)) {
       this.logger.warn(`Invalid UUID provided: ${id}`, 'AlbumService');
-      return null;
+      throw new BadRequestException('Invalid album ID (not UUID)');
     }
     const album = await this.prisma.album.findUnique({
       where: { id },
     });
-    if (album) {
-      this.logger.log(`Album found: ${album.name} (ID: ${album.id})`, 'AlbumService');
-    } else {
+    if (!album) {
       this.logger.warn(`Album not found with ID: ${id}`, 'AlbumService');
+      throw new NotFoundException('Album not found');
     }
+    this.logger.log(`Album found: ${album.name} (ID: ${album.id})`, 'AlbumService');
     return album;
   }
 
-  async update(id: string, updateAlbumDto: UpdateAlbumDto): Promise<Album | null> {
+  async update(id: string, updateAlbumDto: UpdateAlbumDto): Promise<Album> {
     this.logger.log(`Updating album: ${id}`, 'AlbumService');
     if (!validate(id)) {
       this.logger.warn(`Invalid UUID provided for update: ${id}`, 'AlbumService');
-      return null;
+      throw new BadRequestException('Invalid album ID (not UUID)');
     }
 
     const existing = await this.prisma.album.findUnique({
@@ -66,7 +72,7 @@ export class AlbumService {
 
     if (!existing) {
       this.logger.warn(`Album not found for update: ${id}`, 'AlbumService');
-      return null;
+      throw new NotFoundException('Album not found');
     }
 
     const updated = await this.prisma.album.update({
@@ -86,11 +92,11 @@ export class AlbumService {
     return updated;
   }
 
-  async remove(id: string): Promise<boolean> {
+  async remove(id: string): Promise<void> {
     this.logger.log(`Deleting album: ${id}`, 'AlbumService');
     if (!validate(id)) {
       this.logger.warn(`Invalid UUID provided for deletion: ${id}`, 'AlbumService');
-      return false;
+      throw new BadRequestException('Invalid album ID (not UUID)');
     }
 
     const existing = await this.prisma.album.findUnique({
@@ -99,7 +105,7 @@ export class AlbumService {
 
     if (!existing) {
       this.logger.warn(`Album not found for deletion: ${id}`, 'AlbumService');
-      return false;
+      throw new NotFoundException('Album not found');
     }
 
     // Delete album (Prisma will handle CASCADE for tracks via onDelete: SetNull)
@@ -110,7 +116,5 @@ export class AlbumService {
     await this.favsService.removeAlbum(id);
 
     this.logger.log(`Album deleted successfully: ${existing.name} (ID: ${id})`, 'AlbumService');
-    return true;
   }
-
 }

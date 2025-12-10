@@ -20,6 +20,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create user' })
   @ApiResponse({ status: 201, description: 'The user has been created.' })
   @ApiResponse({ status: 400, description: 'Bad request. Body does not contain required fields.' })

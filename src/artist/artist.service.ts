@@ -1,4 +1,10 @@
-import { Injectable, Inject, forwardRef } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  forwardRef,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { validate } from 'uuid';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
@@ -35,28 +41,28 @@ export class ArtistService {
     return artists;
   }
 
-  async findOne(id: string): Promise<Artist | null> {
+  async findOne(id: string): Promise<Artist> {
     this.logger.debug(`Fetching artist by ID: ${id}`, 'ArtistService');
     if (!validate(id)) {
       this.logger.warn(`Invalid UUID provided: ${id}`, 'ArtistService');
-      return null;
+      throw new BadRequestException('Invalid artist ID (not UUID)');
     }
     const artist = await this.prisma.artist.findUnique({
       where: { id },
     });
-    if (artist) {
-      this.logger.log(`Artist found: ${artist.name} (ID: ${artist.id})`, 'ArtistService');
-    } else {
+    if (!artist) {
       this.logger.warn(`Artist not found with ID: ${id}`, 'ArtistService');
+      throw new NotFoundException('Artist not found');
     }
+    this.logger.log(`Artist found: ${artist.name} (ID: ${artist.id})`, 'ArtistService');
     return artist;
   }
 
-  async update(id: string, updateArtistDto: UpdateArtistDto): Promise<Artist | null> {
+  async update(id: string, updateArtistDto: UpdateArtistDto): Promise<Artist> {
     this.logger.log(`Updating artist: ${id}`, 'ArtistService');
     if (!validate(id)) {
       this.logger.warn(`Invalid UUID provided for update: ${id}`, 'ArtistService');
-      return null;
+      throw new BadRequestException('Invalid artist ID (not UUID)');
     }
 
     const existing = await this.prisma.artist.findUnique({
@@ -65,7 +71,7 @@ export class ArtistService {
 
     if (!existing) {
       this.logger.warn(`Artist not found for update: ${id}`, 'ArtistService');
-      return null;
+      throw new NotFoundException('Artist not found');
     }
 
     const updated = await this.prisma.artist.update({
@@ -79,11 +85,11 @@ export class ArtistService {
     return updated;
   }
 
-  async remove(id: string): Promise<boolean> {
+  async remove(id: string): Promise<void> {
     this.logger.log(`Deleting artist: ${id}`, 'ArtistService');
     if (!validate(id)) {
       this.logger.warn(`Invalid UUID provided for deletion: ${id}`, 'ArtistService');
-      return false;
+      throw new BadRequestException('Invalid artist ID (not UUID)');
     }
 
     const existing = await this.prisma.artist.findUnique({
@@ -92,7 +98,7 @@ export class ArtistService {
 
     if (!existing) {
       this.logger.warn(`Artist not found for deletion: ${id}`, 'ArtistService');
-      return false;
+      throw new NotFoundException('Artist not found');
     }
 
     // Delete artist (Prisma will handle CASCADE for albums/tracks via onDelete: SetNull)
@@ -103,6 +109,5 @@ export class ArtistService {
     await this.favsService.removeArtist(id);
 
     this.logger.log(`Artist deleted successfully: ${existing.name} (ID: ${id})`, 'ArtistService');
-    return true;
   }
 }

@@ -7,14 +7,12 @@ import {
   Param,
   Delete,
   HttpCode,
-  NotFoundException,
-  BadRequestException,
+  HttpStatus,
 } from '@nestjs/common';
 import { TrackService } from './track.service';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { validate } from 'uuid';
 
 @Controller('track')
 @ApiTags('Tracks')
@@ -22,6 +20,7 @@ export class TrackController {
   constructor(private readonly trackService: TrackService) {}
 
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Add new track' })
   @ApiResponse({ status: 201, description: 'Track created' })
   @ApiResponse({ status: 400, description: 'Bad request' })
@@ -42,14 +41,7 @@ export class TrackController {
   @ApiResponse({ status: 400, description: 'Invalid UUID' })
   @ApiResponse({ status: 404, description: 'Track not found' })
   async findOne(@Param('id') id: string) {
-    const track = await this.trackService.findOne(id);
-    if (track === null) {
-      if (!validate(id)) {
-        throw new BadRequestException('Invalid UUID');
-      }
-      throw new NotFoundException('Track not found');
-    }
-    return track;
+    return this.trackService.findOne(id);
   }
 
   @Put(':id')
@@ -58,29 +50,16 @@ export class TrackController {
   @ApiResponse({ status: 400, description: 'Bad request' })
   @ApiResponse({ status: 404, description: 'Track not found' })
   async update(@Param('id') id: string, @Body() updateTrackDto: UpdateTrackDto) {
-    if (!validate(id)) {
-      throw new BadRequestException('Invalid UUID');
-    }
-    const track = await this.trackService.update(id, updateTrackDto);
-    if (!track) {
-      throw new NotFoundException('Track not found');
-    }
-    return track;
+    return this.trackService.update(id, updateTrackDto);
   }
 
   @Delete(':id')
-  @HttpCode(204)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete track' })
   @ApiResponse({ status: 204, description: 'Track deleted' })
   @ApiResponse({ status: 400, description: 'Invalid UUID' })
   @ApiResponse({ status: 404, description: 'Track not found' })
   async remove(@Param('id') id: string) {
-    if (!validate(id)) {
-      throw new BadRequestException('Invalid UUID');
-    }
-    const deleted = await this.trackService.remove(id);
-    if (!deleted) {
-      throw new NotFoundException('Track not found');
-    }
+    return this.trackService.remove(id);
   }
 }

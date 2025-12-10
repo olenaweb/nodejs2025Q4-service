@@ -7,11 +7,9 @@ import {
   Param,
   Delete,
   HttpCode,
-  NotFoundException,
-  BadRequestException,
+  HttpStatus,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { validate } from 'uuid';
 import { ArtistService } from './artist.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
@@ -22,6 +20,7 @@ export class ArtistController {
   constructor(private readonly artistService: ArtistService) {}
 
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create artist' })
   @ApiResponse({ status: 201, description: 'Artist created successfully' })
   @ApiResponse({ status: 400, description: 'Bad request. Invalid data' })
@@ -42,14 +41,7 @@ export class ArtistController {
   @ApiResponse({ status: 400, description: 'Bad request. Invalid UUID' })
   @ApiResponse({ status: 404, description: 'Artist not found' })
   async findOne(@Param('id') id: string) {
-    const artist = await this.artistService.findOne(id);
-    if (artist === null) {
-      if (!validate(id)) {
-        throw new BadRequestException('Invalid UUID');
-      }
-      throw new NotFoundException('Artist not found');
-    }
-    return artist;
+    return this.artistService.findOne(id);
   }
 
   @Put(':id')
@@ -58,29 +50,16 @@ export class ArtistController {
   @ApiResponse({ status: 400, description: 'Bad request. Invalid data' })
   @ApiResponse({ status: 404, description: 'Artist not found' })
   async update(@Param('id') id: string, @Body() updateArtistDto: UpdateArtistDto) {
-    if (!validate(id)) {
-      throw new BadRequestException('Invalid UUID');
-    }
-    const artist = await this.artistService.update(id, updateArtistDto);
-    if (!artist) {
-      throw new NotFoundException('Artist not found');
-    }
-    return artist;
+    return this.artistService.update(id, updateArtistDto);
   }
 
   @Delete(':id')
-  @HttpCode(204)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete artist' })
   @ApiResponse({ status: 204, description: 'Artist deleted successfully' })
   @ApiResponse({ status: 400, description: 'Bad request. Invalid UUID' })
   @ApiResponse({ status: 404, description: 'Artist not found' })
   async remove(@Param('id') id: string) {
-    if (!validate(id)) {
-      throw new BadRequestException('Invalid UUID');
-    }
-    const deleted = await this.artistService.remove(id);
-    if (!deleted) {
-      throw new NotFoundException('Artist not found');
-    }
+    return this.artistService.remove(id);
   }
 }

@@ -1,4 +1,10 @@
-import { Injectable, Inject, forwardRef } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  forwardRef,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { validate } from 'uuid';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateTrackDto } from './dto/create-track.dto';
@@ -37,28 +43,28 @@ export class TrackService {
     return tracks;
   }
 
-  async findOne(id: string): Promise<Track | null> {
+  async findOne(id: string): Promise<Track> {
     this.logger.debug(`Fetching track by ID: ${id}`, 'TrackService');
     if (!validate(id)) {
       this.logger.warn(`Invalid UUID provided: ${id}`, 'TrackService');
-      return null;
+      throw new BadRequestException('Invalid track ID (not UUID)');
     }
     const track = await this.prisma.track.findUnique({
       where: { id },
     });
-    if (track) {
-      this.logger.log(`Track found: ${track.name} (ID: ${track.id})`, 'TrackService');
-    } else {
+    if (!track) {
       this.logger.warn(`Track not found with ID: ${id}`, 'TrackService');
+      throw new NotFoundException('Track not found');
     }
+    this.logger.log(`Track found: ${track.name} (ID: ${track.id})`, 'TrackService');
     return track;
   }
 
-  async update(id: string, updateTrackDto: UpdateTrackDto): Promise<Track | null> {
+  async update(id: string, updateTrackDto: UpdateTrackDto): Promise<Track> {
     this.logger.log(`Updating track: ${id}`, 'TrackService');
     if (!validate(id)) {
       this.logger.warn(`Invalid UUID provided for update: ${id}`, 'TrackService');
-      return null;
+      throw new BadRequestException('Invalid track ID (not UUID)');
     }
 
     const existing = await this.prisma.track.findUnique({
@@ -67,7 +73,7 @@ export class TrackService {
 
     if (!existing) {
       this.logger.warn(`Track not found for update: ${id}`, 'TrackService');
-      return null;
+      throw new NotFoundException('Track not found');
     }
 
     const updated = await this.prisma.track.update({
@@ -89,11 +95,11 @@ export class TrackService {
     return updated;
   }
 
-  async remove(id: string): Promise<boolean> {
+  async remove(id: string): Promise<void> {
     this.logger.log(`Deleting track: ${id}`, 'TrackService');
     if (!validate(id)) {
       this.logger.warn(`Invalid UUID provided for deletion: ${id}`, 'TrackService');
-      return false;
+      throw new BadRequestException('Invalid track ID (not UUID)');
     }
 
     const existing = await this.prisma.track.findUnique({
@@ -102,7 +108,7 @@ export class TrackService {
 
     if (!existing) {
       this.logger.warn(`Track not found for deletion: ${id}`, 'TrackService');
-      return false;
+      throw new NotFoundException('Track not found');
     }
 
     await this.prisma.track.delete({
@@ -112,7 +118,5 @@ export class TrackService {
     await this.favsService.removeTrack(id);
 
     this.logger.log(`Track deleted successfully: ${existing.name} (ID: ${id})`, 'TrackService');
-    return true;
   }
-
 }
