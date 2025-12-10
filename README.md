@@ -49,7 +49,9 @@ npm run docker:check:library
 npm run lint
 npm run format
 # 9. check network
-docker network inspect nodejs2025q4-service_home-library-network  
+docker network inspect nodejs2025q4-service_home-library-network
+# 10. Check Database auth
+docker exec home-library-postgres env | Select-String -Pattern "POSTGRES"
 
 ```
 
@@ -58,6 +60,7 @@ docker network inspect nodejs2025q4-service_home-library-network
 npm run down
 # start application
 npm run up
+
 ```
 
 ##### 4. check logs of server in real time
@@ -104,13 +107,13 @@ Expected output:
 
 #### Containerization, Docker
 
-| Requirement                             | Points | Status | Implementation                                                                                                                                         |
-| --------------------------------------- | ------ | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Image size < 500 MB                     | +20    | ✅     | postgres-db: 105.6 MB , rss-home-library: 204.5 MB    [olenaweb/rss-home-library](https://hub.docker.com/r/olenaweb/rss-home-library) [olenaweb/postgres-db](https://hub.docker.com/r/olenaweb/postgres-db)                                                                                                        |
-| NPM script for vulnerabilities scanning | +10    | ✅     | `npm run docker:check:db` and `npm run docker:check:library`                                                                                           |
-| Image pushed to DockerHub               | +20    | ✅     | [olenaweb/postgres-db](https://hub.docker.com/r/olenaweb/postgres-db), [olenaweb/rss-home-library](https://hub.docker.com/r/olenaweb/rss-home-library) |
+| Requirement                             | Points | Status | Implementation                                                                                                                                                                                           |
+| --------------------------------------- | ------ | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Image size < 500 MB                     | +20    | ✅     | postgres-db: 105.6 MB , rss-home-library: 204.5 MB [olenaweb/rss-home-library](https://hub.docker.com/r/olenaweb/rss-home-library) [olenaweb/postgres-db](https://hub.docker.com/r/olenaweb/postgres-db) |
+| NPM script for vulnerabilities scanning | +10    | ✅     | `npm run docker:check:db` and `npm run docker:check:library`                                                                                                                                             |
+| Image pushed to DockerHub               | +20    | ✅     | [olenaweb/postgres-db](https://hub.docker.com/r/olenaweb/postgres-db), [olenaweb/rss-home-library](https://hub.docker.com/r/olenaweb/rss-home-library)                                                   |
 
-**Note:** \*App image includes devDependencies (nodemon, @nestjs/cli, typescript) for hot-reload functionality required by the task. 
+**Note:** \*App image includes devDependencies (nodemon, @nestjs/cli, typescript) for hot-reload functionality required by the task.
 
 #### Database & ORM
 
