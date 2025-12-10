@@ -5,6 +5,7 @@ import { FavoritesResponse } from './entities/favorites.entity';
 import { ArtistService } from '../artist/artist.service';
 import { AlbumService } from '../album/album.service';
 import { TrackService } from '../track/track.service';
+import { LoggingService } from '../logging/logging.service';
 
 @Injectable()
 export class FavsService implements OnModuleInit {
@@ -16,6 +17,7 @@ export class FavsService implements OnModuleInit {
   constructor(
     private readonly prisma: PrismaService,
     private moduleRef: ModuleRef,
+    private readonly logger: LoggingService,
   ) {}
 
   async onModuleInit() {
@@ -34,6 +36,7 @@ export class FavsService implements OnModuleInit {
   }
 
   async findAll(): Promise<FavoritesResponse> {
+    this.logger.debug('Fetching all favorites', 'FavsService');
     const favorite = await this.prisma.favorite.findUnique({
       where: { id: this.favoriteId },
       include: {
@@ -55,22 +58,32 @@ export class FavsService implements OnModuleInit {
       },
     });
 
-    return {
+    const response = {
       artists: favorite?.artists.map((fa) => fa.artist) || [],
       albums: favorite?.albums.map((fa) => fa.album) || [],
       tracks: favorite?.tracks.map((ft) => ft.track) || [],
     };
+
+    this.logger.log(
+      `Found ${response.artists.length} artists, ${response.albums.length} albums, ${response.tracks.length} tracks in favorites`,
+      'FavsService',
+    );
+
+    return response;
   }
 
   // Artist methods
   async addArtist(id: string): Promise<boolean> {
+    this.logger.log(`Adding artist to favorites: ${id}`, 'FavsService');
     try {
       const artist = await this.artistService.findOne(id);
       if (!artist) {
+        this.logger.warn(`Artist not found: ${id}`, 'FavsService');
         return false;
       }
     } catch {
       // Artist not found
+      this.logger.warn(`Artist not found (exception): ${id}`, 'FavsService');
       return false;
     }
 
@@ -85,6 +98,7 @@ export class FavsService implements OnModuleInit {
     });
 
     if (existing) {
+      this.logger.log(`Artist already in favorites: ${id}`, 'FavsService');
       return true;
     }
 
@@ -95,10 +109,12 @@ export class FavsService implements OnModuleInit {
       },
     });
 
+    this.logger.log(`Artist added to favorites successfully: ${id}`, 'FavsService');
     return true;
   }
 
   async deleteArtist(id: string): Promise<boolean> {
+    this.logger.log(`Removing artist from favorites: ${id}`, 'FavsService');
     try {
       await this.prisma.favoriteArtist.delete({
         where: {
@@ -108,8 +124,10 @@ export class FavsService implements OnModuleInit {
           },
         },
       });
+      this.logger.log(`Artist removed from favorites successfully: ${id}`, 'FavsService');
       return true;
     } catch {
+      this.logger.warn(`Artist not found in favorites: ${id}`, 'FavsService');
       return false;
     }
   }
@@ -131,13 +149,16 @@ export class FavsService implements OnModuleInit {
 
   // Album methods
   async addAlbum(id: string): Promise<boolean> {
+    this.logger.log(`Adding album to favorites: ${id}`, 'FavsService');
     try {
       const album = await this.albumService.findOne(id);
       if (!album) {
+        this.logger.warn(`Album not found: ${id}`, 'FavsService');
         return false;
       }
     } catch {
       // Album not found
+      this.logger.warn(`Album not found (exception): ${id}`, 'FavsService');
       return false;
     }
 
@@ -152,6 +173,7 @@ export class FavsService implements OnModuleInit {
     });
 
     if (existing) {
+      this.logger.log(`Album already in favorites: ${id}`, 'FavsService');
       return true;
     }
 
@@ -162,10 +184,12 @@ export class FavsService implements OnModuleInit {
       },
     });
 
+    this.logger.log(`Album added to favorites successfully: ${id}`, 'FavsService');
     return true;
   }
 
   async deleteAlbum(id: string): Promise<boolean> {
+    this.logger.log(`Removing album from favorites: ${id}`, 'FavsService');
     try {
       await this.prisma.favoriteAlbum.delete({
         where: {
@@ -175,8 +199,10 @@ export class FavsService implements OnModuleInit {
           },
         },
       });
+      this.logger.log(`Album removed from favorites successfully: ${id}`, 'FavsService');
       return true;
     } catch {
+      this.logger.warn(`Album not found in favorites: ${id}`, 'FavsService');
       return false;
     }
   }
@@ -198,13 +224,16 @@ export class FavsService implements OnModuleInit {
 
   // Track methods
   async addTrack(id: string): Promise<boolean> {
+    this.logger.log(`Adding track to favorites: ${id}`, 'FavsService');
     try {
       const track = await this.trackService.findOne(id);
       if (!track) {
+        this.logger.warn(`Track not found: ${id}`, 'FavsService');
         return false;
       }
     } catch {
       // Track not found
+      this.logger.warn(`Track not found (exception): ${id}`, 'FavsService');
       return false;
     }
 
@@ -219,6 +248,7 @@ export class FavsService implements OnModuleInit {
     });
 
     if (existing) {
+      this.logger.log(`Track already in favorites: ${id}`, 'FavsService');
       return true;
     }
 
@@ -229,10 +259,12 @@ export class FavsService implements OnModuleInit {
       },
     });
 
+    this.logger.log(`Track added to favorites successfully: ${id}`, 'FavsService');
     return true;
   }
 
   async deleteTrack(id: string): Promise<boolean> {
+    this.logger.log(`Removing track from favorites: ${id}`, 'FavsService');
     try {
       await this.prisma.favoriteTrack.delete({
         where: {
@@ -242,8 +274,10 @@ export class FavsService implements OnModuleInit {
           },
         },
       });
+      this.logger.log(`Track removed from favorites successfully: ${id}`, 'FavsService');
       return true;
     } catch {
+      this.logger.warn(`Track not found in favorites: ${id}`, 'FavsService');
       return false;
     }
   }

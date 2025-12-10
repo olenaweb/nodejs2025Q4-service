@@ -5,6 +5,7 @@ import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { Track } from './entities/track.entity';
 import { FavsService } from '../favs/favs.service';
+import { LoggingService } from '../logging/logging.service';
 
 @Injectable()
 export class TrackService {
@@ -12,10 +13,12 @@ export class TrackService {
     private readonly prisma: PrismaService,
     @Inject(forwardRef(() => FavsService))
     private readonly favsService: FavsService,
+    private readonly logger: LoggingService,
   ) {}
 
   async create(createTrackDto: CreateTrackDto): Promise<Track> {
-    return this.prisma.track.create({
+    this.logger.log(`Creating new track: ${createTrackDto.name}`, 'TrackService');
+    const track = await this.prisma.track.create({
       data: {
         name: createTrackDto.name,
         artistId: createTrackDto.artistId || null,
@@ -23,23 +26,38 @@ export class TrackService {
         duration: createTrackDto.duration,
       },
     });
+    this.logger.log(`Track created successfully: ${track.name} (ID: ${track.id})`, 'TrackService');
+    return track;
   }
 
   async findAll(): Promise<Track[]> {
-    return this.prisma.track.findMany();
+    this.logger.debug('Fetching all tracks', 'TrackService');
+    const tracks = await this.prisma.track.findMany();
+    this.logger.log(`Found ${tracks.length} tracks`, 'TrackService');
+    return tracks;
   }
 
   async findOne(id: string): Promise<Track | null> {
+    this.logger.debug(`Fetching track by ID: ${id}`, 'TrackService');
     if (!validate(id)) {
+      this.logger.warn(`Invalid UUID provided: ${id}`, 'TrackService');
       return null;
     }
-    return this.prisma.track.findUnique({
+    const track = await this.prisma.track.findUnique({
       where: { id },
     });
+    if (track) {
+      this.logger.log(`Track found: ${track.name} (ID: ${track.id})`, 'TrackService');
+    } else {
+      this.logger.warn(`Track not found with ID: ${id}`, 'TrackService');
+    }
+    return track;
   }
 
   async update(id: string, updateTrackDto: UpdateTrackDto): Promise<Track | null> {
+    this.logger.log(`Updating track: ${id}`, 'TrackService');
     if (!validate(id)) {
+      this.logger.warn(`Invalid UUID provided for update: ${id}`, 'TrackService');
       return null;
     }
 
@@ -48,10 +66,11 @@ export class TrackService {
     });
 
     if (!existing) {
+      this.logger.warn(`Track not found for update: ${id}`, 'TrackService');
       return null;
     }
 
-    return this.prisma.track.update({
+    const updated = await this.prisma.track.update({
       where: { id },
       data: {
         ...updateTrackDto,
@@ -63,10 +82,17 @@ export class TrackService {
           updateTrackDto.albumId !== undefined ? updateTrackDto.albumId || null : existing.albumId,
       },
     });
+    this.logger.log(
+      `Track updated successfully: ${updated.name} (ID: ${updated.id})`,
+      'TrackService',
+    );
+    return updated;
   }
 
   async remove(id: string): Promise<boolean> {
+    this.logger.log(`Deleting track: ${id}`, 'TrackService');
     if (!validate(id)) {
+      this.logger.warn(`Invalid UUID provided for deletion: ${id}`, 'TrackService');
       return false;
     }
 
@@ -75,6 +101,7 @@ export class TrackService {
     });
 
     if (!existing) {
+      this.logger.warn(`Track not found for deletion: ${id}`, 'TrackService');
       return false;
     }
 
@@ -84,26 +111,8 @@ export class TrackService {
 
     await this.favsService.removeTrack(id);
 
+    this.logger.log(`Track deleted successfully: ${existing.name} (ID: ${id})`, 'TrackService');
     return true;
   }
 
-  // Clear artistId reference when artist is deleted
-  // Not needed anymore - Prisma handles this with onDelete: SetNull
-  // keeped the method for backward compatibility
-  async clearArtistId(artistId: string): Promise<void> {
-    await this.prisma.track.updateMany({
-      where: { artistId },
-      data: { artistId: null },
-    });
-  }
-
-  // Clear albumId reference when album is deleted
-  // Not needed anymore - Prisma handles this with onDelete: SetNull
-  // keeped the method for backward compatibility
-  async clearAlbumId(albumId: string): Promise<void> {
-    await this.prisma.track.updateMany({
-      where: { albumId },
-      data: { albumId: null },
-    });
-  }
 }

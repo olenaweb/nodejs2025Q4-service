@@ -5,12 +5,65 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder, SwaggerDocumentOptions } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import { LoggingService } from './logging/logging.service';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Get LoggingService instance for global exception handling
+  const loggingService = app.get(LoggingService);
+
+  // Handle uncaught exceptions
+  process.on('uncaughtException', async (error: Error) => {
+    loggingService.fatal(
+      `💥 Uncaught Exception: ${error.message}`,
+      error.stack,
+      'UncaughtException',
+    );
+
+    console.error('Application encountered an uncaught exception. Exiting...');
+
+    try {
+      // Give time for logs to be written
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await app.close();
+      loggingService.log('Application closed gracefully', 'UncaughtException');
+    } catch (closeError) {
+      loggingService.error(
+        'Failed to close application gracefully',
+        closeError instanceof Error ? closeError.stack : undefined,
+        'UncaughtException',
+      );
+    } finally {
+      process.exit(1);
+    }
+  });
+
+  // Handle unhandled promise rejections
+  process.on('unhandledRejection', (reason: unknown) => {
+    const message = reason instanceof Error ? reason.message : String(reason);
+
+    const stack = reason instanceof Error ? reason.stack : undefined;
+
+    loggingService.error(
+      `⚠️  Unhandled Promise Rejection: ${message}`,
+      stack,
+      'UnhandledRejection',
+    );
+
+    // In production, exit on unhandled rejections
+    if (process.env.NODE_ENV === 'production') {
+      loggingService.fatal(
+        'Unhandled rejection in production. Exiting...',
+        undefined,
+        'UnhandledRejection',
+      );
+      process.exit(1);
+    }
+  });
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -44,9 +97,12 @@ async function bootstrap() {
   const port = process.env.PORT || 4000;
   app.enableShutdownHooks();
   await app.listen(port);
-  console.log(`✅ Application is running on: http://localhost:${port}. Ctrl+C to exit${EOL}`);
-  console.log(`✅ Swagger UI: http://localhost:${port}/doc${EOL}`);
-  console.log(`✅ Swagger YAML: http://localhost:${port}/doc-yaml${EOL}`);
+
+  loggingService.log(`✅ Application is running on: http://localhost:${port}`, 'Bootstrap');
+  loggingService.log(`✅ Swagger UI: http://localhost:${port}/doc`, 'Bootstrap');
+  loggingService.log(`✅ Swagger YAML: http://localhost:${port}/doc-yaml`, 'Bootstrap');
+
+  console.log(`${EOL}Application started successfully. Press Ctrl+C to exit.${EOL}`);
 }
 
 bootstrap().catch((error) => {

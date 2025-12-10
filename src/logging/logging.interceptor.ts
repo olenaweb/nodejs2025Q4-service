@@ -1,0 +1,99 @@
+import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { Request, Response } from 'express';
+import { LoggingService } from './logging.service';
+
+@Injectable()
+export class LoggingInterceptor implements NestInterceptor {
+  constructor(private readonly logger: LoggingService) {}
+
+  intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
+    const ctx = context.switchToHttp();
+    const request = ctx.getRequest<Request>();
+    const response = ctx.getResponse<Response>();
+
+    const { method, url, body, query } = request;
+    const startTime = Date.now();
+
+    // Skip logging for health check endpoint
+    const isHealthCheck = url === '/' && method === 'GET';
+
+    // Log incoming request as debug (skip health checks)
+    // This allows control via LOG_LEVEL: set to 3 (log) to hide incoming requests
+    if (!isHealthCheck) {
+      this.logger.debug(`→ ${method} ${url}`, 'LoggingInterceptor');
+    }
+
+    // Log query parameters if present (skip health checks)
+    if (!isHealthCheck && Object.keys(query).length > 0) {
+      this.logger.debug(`  Query: ${JSON.stringify(query)}`, 'LoggingInterceptor');
+    }
+
+    // Log request body if present (exclude sensitive data, skip health checks)
+    if (!isHealthCheck && body && Object.keys(body).length > 0) {
+      const sanitizedBody = this.sanitizeBody(body);
+      this.logger.debug(`  Body: ${JSON.stringify(sanitizedBody)}`, 'LoggingInterceptor');
+    }
+
+    // Process request and log response
+    return next.handle().pipe(
+      tap({
+        next: () => {
+          const duration = Date.now() - startTime;
+          const statusCode = response.statusCode;
+
+          // Skip logging response for health checks
+          if (!isHealthCheck) {
+            this.logger.log(
+              `← ${method} ${url} - ${statusCode} - ${duration}ms`,
+              'LoggingInterceptor',
+            );
+          }
+
+          // Log slow requests (> 1 second, even for health checks)
+          if (duration > 1000) {
+            this.logger.warn(
+              `⚠️  Slow request: ${method} ${url} took ${duration}ms`,
+              'LoggingInterceptor',
+            );
+          }
+        },
+        error: (error: Error) => {
+          const duration = Date.now() - startTime;
+          this.logger.error(
+            `← ${method} ${url} - ERROR - ${duration}ms - ${error.message}`,
+            error.stack,
+            'LoggingInterceptor',
+          );
+        },
+      }),
+    );
+  }
+
+  /**
+   * Sanitize sensitive data from request body
+   */
+  private sanitizeBody(body: Record<string, unknown>): Record<string, unknown> {
+    const sensitiveFields = [
+      'password',
+      'oldPassword',
+      'newPassword',
+      'token',
+      'refreshToken',
+      'accessToken',
+      'secret',
+      'apiKey',
+    ];
+
+    const sanitized = { ...body };
+
+    sensitiveFields.forEach((field) => {
+      if (field in sanitized) {
+        sanitized[field] = '***';
+      }
+    });
+
+    return sanitized;
+  }
+}
