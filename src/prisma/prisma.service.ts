@@ -1,5 +1,5 @@
 import { Injectable, OnModuleInit, OnModuleDestroy, Logger } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { Pool } from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
 
@@ -12,12 +12,35 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     const pool = new Pool({ connectionString });
     const adapter = new PrismaPg(pool);
 
+    // Prisma logging configuration based on environment variables
+    // DATABASE_LOGGING options: 'none', 'error', 'warn', 'info', 'query', 'all'
+    const getPrismaLogLevel = (): Prisma.LogLevel[] => {
+      const logLevel = process.env.DATABASE_LOGGING?.toLowerCase();
+
+      switch (logLevel) {
+        case 'none':
+        case 'false':
+          return [];
+        case 'error':
+          return ['error'];
+        case 'warn':
+          return ['warn', 'error'];
+        case 'info':
+          return ['info', 'warn', 'error'];
+        case 'query':
+          return ['query', 'warn', 'error'];
+        case 'all':
+        case 'true':
+          return ['query', 'info', 'warn', 'error'];
+        default:
+          // Default: only errors and warnings
+          return ['warn', 'error'];
+      }
+    };
+
     super({
       adapter,
-      log:
-        process.env.DATABASE_LOGGING === 'true'
-          ? ['query', 'info', 'warn', 'error']
-          : ['warn', 'error'],
+      log: getPrismaLogLevel(),
     });
   }
 
