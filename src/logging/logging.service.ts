@@ -1,7 +1,10 @@
 import { Injectable, LoggerService, LogLevel } from '@nestjs/common';
+import { Logger } from 'winston';
+import { createWinstonLogger } from './winston.config';
 
 @Injectable()
 export class LoggingService implements LoggerService {
+  private readonly logger: Logger;
   private logLevel: number;
 
   private readonly LOG_LEVELS: Record<LogLevel, number> = {
@@ -14,6 +17,7 @@ export class LoggingService implements LoggerService {
   };
 
   constructor() {
+    this.logger = createWinstonLogger();
     this.logLevel = parseInt(process.env.LOG_LEVEL || '3', 10);
   }
 
@@ -23,53 +27,43 @@ export class LoggingService implements LoggerService {
     return messageLevel <= this.logLevel;
   }
 
-  private formatMessage(level: string, message: string | object, context?: string): string {
-    const timestamp = new Date().toISOString();
-    const contextString = context ? `[${context}]` : '';
-    const messageString = typeof message === 'object' ? JSON.stringify(message) : String(message);
-
-    return `${timestamp} [${level.toUpperCase()}] ${contextString} ${messageString}`;
+  private formatMessage(message: string | object): string {
+    return typeof message === 'object' ? JSON.stringify(message) : String(message);
   }
 
   log(message: string | object, context?: string): void {
     if (this.shouldLog('log')) {
-      console.log(this.formatMessage('log', message, context));
+      this.logger.info(this.formatMessage(message), { context });
     }
   }
 
   fatal(message: string | object, trace?: string, context?: string): void {
     if (this.shouldLog('fatal')) {
-      console.error(this.formatMessage('fatal', message, context));
-      if (trace) {
-        console.error(`Stack trace: ${trace}`);
-      }
+      this.logger.error(this.formatMessage(message), { context, trace, level: 'fatal' });
     }
   }
 
   error(message: string | object, trace?: string, context?: string): void {
     if (this.shouldLog('error')) {
-      console.error(this.formatMessage('error', message, context));
-      if (trace) {
-        console.error(`Stack trace: ${trace}`);
-      }
+      this.logger.error(this.formatMessage(message), { context, trace });
     }
   }
 
   warn(message: string | object, context?: string): void {
     if (this.shouldLog('warn')) {
-      console.warn(this.formatMessage('warn', message, context));
+      this.logger.warn(this.formatMessage(message), { context });
     }
   }
 
   debug(message: string | object, context?: string): void {
     if (this.shouldLog('debug')) {
-      console.debug(this.formatMessage('debug', message, context));
+      this.logger.debug(this.formatMessage(message), { context });
     }
   }
 
   verbose(message: string | object, context?: string): void {
     if (this.shouldLog('verbose')) {
-      console.log(this.formatMessage('verbose', message, context));
+      this.logger.verbose(this.formatMessage(message), { context });
     }
   }
 }
