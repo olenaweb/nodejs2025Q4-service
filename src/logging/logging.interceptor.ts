@@ -19,21 +19,26 @@ export class LoggingInterceptor implements NestInterceptor {
     // Skip logging for health check endpoint
     const isHealthCheck = url === '/' && method === 'GET';
 
-    // Log incoming request as debug (skip health checks)
-    // This allows control via LOG_LEVEL: set to 3 (log) to hide incoming requests
+    // Log incoming request (skip health checks)
     if (!isHealthCheck) {
-      this.logger.debug(`→ ${method} ${url}`, 'LoggingInterceptor');
+      this.logger.log(`→ ${method} ${url}`, 'LoggingInterceptor');
+
+      // Debug: log body type and presence
+      // this.logger.debug(
+      //   `  [Debug] body type: ${typeof body}, has body: ${!!body}, keys: ${body ? Object.keys(body).length : 0}`,
+      //   'LoggingInterceptor',
+      // );
     }
 
     // Log query parameters if present (skip health checks)
     if (!isHealthCheck && Object.keys(query).length > 0) {
-      this.logger.debug(`  Query: ${JSON.stringify(query)}`, 'LoggingInterceptor');
+      this.logger.log(`  Query: ${JSON.stringify(query)}`, 'LoggingInterceptor');
     }
 
     // Log request body if present (exclude sensitive data, skip health checks)
-    if (!isHealthCheck && body && Object.keys(body).length > 0) {
-      const sanitizedBody = this.sanitizeBody(body);
-      this.logger.debug(`  Body: ${JSON.stringify(sanitizedBody)}`, 'LoggingInterceptor');
+    if (!isHealthCheck && body && typeof body === 'object' && Object.keys(body).length > 0) {
+      const sanitizedBody = this.sanitizeBody(body as Record<string, unknown>);
+      this.logger.log(`  Body: ${JSON.stringify(sanitizedBody)}`, 'LoggingInterceptor');
     }
 
     // Process request and log response

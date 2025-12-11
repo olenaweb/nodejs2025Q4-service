@@ -25,7 +25,12 @@
     "clean:db": "powershell -ExecutionPolicy Bypass -File ./scripts/clean-db.ps1",
     "clean:db:sh": "bash ./scripts/clean-db.sh",
     "test": "jest --testMatch \"<rootDir>/*.spec.ts\" --noStackTrace --runInBand",
-    "test:clean": "npm run clean:db && npm test"
+    "test:clean": "npm run clean:db && npm test",
+    "test:auth": "cross-env TEST_MODE=auth jest --testPathIgnorePatterns refresh.e2e.spec.ts --noStackTrace --runInBand",
+    "test:refresh": "cross-env TEST_MODE=auth jest --testPathPattern refresh.e2e.spec.ts --noStackTrace --runInBand",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand"
   },
   "dependencies": {
     "@nestjs/common": "^10.4.16",
