@@ -1,7 +1,7 @@
 import {
   Injectable,
   ConflictException,
-  UnauthorizedException,
+  // UnauthorizedException,
   ForbiddenException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -33,17 +33,15 @@ export class AuthService {
   async signup(signupDto: SignupDto): Promise<{ id: string; login: string }> {
     const { login, password } = signupDto;
 
-    // Проверяем, существует ли пользователь
     const existingUser = await this.userService.findByLogin(login);
     if (existingUser) {
       throw new ConflictException('User with this login already exists');
     }
 
-    // Хешируем пароль
+    // hash password
     const saltRounds = parseInt(process.env.CRYPT_SALT || '10', 10);
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    // Создаем пользователя
     const user = await this.userService.create({
       login,
       password: hashedPassword,
@@ -58,19 +56,16 @@ export class AuthService {
   async login(loginDto: LoginDto): Promise<TokenResponse> {
     const { login, password } = loginDto;
 
-    // Находим пользователя
     const user = await this.userService.findByLogin(login);
     if (!user) {
       throw new ForbiddenException('Invalid credentials');
     }
 
-    // Проверяем пароль
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       throw new ForbiddenException('Invalid credentials');
     }
 
-    // Генерируем токены
     return this.generateTokens(user.id, user.login);
   }
 
@@ -78,18 +73,17 @@ export class AuthService {
     const { refreshToken } = refreshDto;
 
     try {
-      // Проверяем refresh token
+      // check refresh token
       const payload = this.jwtService.verify<TokenPayload>(refreshToken, {
         secret: process.env.JWT_SECRET_REFRESH_KEY,
         ignoreExpiration: false,
       });
 
-      // Дополнительная проверка срока действия
+      // expiration check
       if (payload.exp && payload.exp * 1000 < Date.now()) {
         throw new Error('Token expired');
       }
 
-      // Генерируем новые токены
       return this.generateTokens(payload.userId, payload.login);
     } catch (error) {
       throw new ForbiddenException('Invalid or expired refresh token');

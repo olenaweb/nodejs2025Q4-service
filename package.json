@@ -24,10 +24,10 @@
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "clean:db": "powershell -ExecutionPolicy Bypass -File ./scripts/clean-db.ps1",
     "clean:db:sh": "bash ./scripts/clean-db.sh",
-    "test": "jest --testMatch \"<rootDir>/*.spec.ts\" --noStackTrace --runInBand",
-    "test:clean": "npm run clean:db && npm test",
     "test:auth": "cross-env TEST_MODE=auth jest --testPathIgnorePatterns refresh.e2e.spec.ts --noStackTrace --runInBand",
+    "test:clean:auth": "npm run clean:db && npm run test:auth",
     "test:refresh": "cross-env TEST_MODE=auth jest --testPathPattern refresh.e2e.spec.ts --noStackTrace --runInBand",
+    "test:clean:refresh": "npm run clean:db && npm run test:refresh",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand"
