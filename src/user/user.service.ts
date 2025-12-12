@@ -139,6 +139,14 @@ export class UserService {
     this.logger.log(`User deleted successfully: ${user.login}`, 'UserService');
   }
 
+  async findByLogin(login: string): Promise<User | null> {
+    this.logger.debug(`Finding user by login: ${login}`, 'UserService');
+    const user = await this.prisma.user.findUnique({
+      where: { login },
+    });
+    return user;
+  }
+
   private excludePassword(user: User): UserResponse {
     const userWithoutPassword = omitKeys(user, 'password');
     // Convert Date to timestamp (number)

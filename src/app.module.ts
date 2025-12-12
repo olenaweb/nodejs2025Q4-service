@@ -9,6 +9,7 @@ import { TrackModule } from './track/track.module';
 import { FavsModule } from './favs/favs.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { LoggingModule } from './logging/logging.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { LoggingModule } from './logging/logging.module';
     }),
     LoggingModule, // Add to the beginning of the list of imports
     PrismaModule,
+    AuthModule,
     UserModule,
     ArtistModule,
     AlbumModule,

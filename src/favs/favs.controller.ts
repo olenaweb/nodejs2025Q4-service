@@ -8,13 +8,16 @@ import {
   BadRequestException,
   NotFoundException,
   UnprocessableEntityException,
+  UseGuards,
 } from '@nestjs/common';
 import { FavsService } from './favs.service';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { validate } from 'uuid';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('favs')
 @ApiTags('Favorites')
+@UseGuards(JwtAuthGuard)
 export class FavsController {
   constructor(private readonly favsService: FavsService) {}
 
