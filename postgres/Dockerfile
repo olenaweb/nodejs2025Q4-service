@@ -2,7 +2,7 @@
 FROM postgres:17.5-alpine3.21
 
 # metadata (optional)
-LABEL maintainer="olenaweb olena.nevzorova@gmail.com>"
+LABEL maintainer="olenaweb <olena.nevzorova@gmail.com>"
 
 # Default port - 5432 (exposed through docker-compose)
 EXPOSE 5432

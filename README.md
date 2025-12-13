@@ -185,6 +185,7 @@ npm run docker:check:library
 **Verification:**
 ```bash
 # Check log files on host (real-time sync with container)
+# bash only
 ls -lh ./logs/
 cat ./logs/application-2025-12-12.log
 cat ./logs/error-2025-12-12.log
@@ -248,7 +249,11 @@ SELECT login, password FROM users;
 
 **Verification:**
 ```bash
+# bash only
 npm run clean:db && npm run test:refresh
+# or
+# powershell
+npm run test:clean:refresh
 # Expected: 4 tests pass (valid token, invalid token, missing token, expired token)
 ```
 
