@@ -57,7 +57,17 @@ npm run logs
 docker logs home-library-app
 
 # Test included clean database before tests (REQUIRED!) and run 98 tests
-npm run test
+npm run test:clean:auth
+npm run test:clean:refresh
+# or
+# clean db!
+npm run clean:db
+npm run test:auth
+
+# clean db!
+npm run clean:db
+npm run test:refresh
+
 # check database
 docker exec -it home-library-postgres psql -U postgres -d home_library -c "SELECT login, password FROM users;"
 # check linter
@@ -75,7 +85,7 @@ npm run up
 ---
 
 ##  Testing & Verification
-### 0. All Basic Functionality Tests with Authentication & Authorization and Refresh Token  
+### 0. All Basic Functionality Tests with Authentication & Authorization and Refresh Token
 
 ```bash
 # Included clean database before tests (REQUIRED!) and run 98 tests
@@ -105,7 +115,7 @@ npm run clean:db
 npm run test:refresh
 
 # or
-npm run test:clean:refresh  
+npm run test:clean:refresh
 ```
 
 **Expected:** 4 tests pass
@@ -129,7 +139,7 @@ npm run test:clean:refresh
    - Click "Authorize" button
 5. **Test protected endpoints:** Try GET `/user`, `/artist`, `/album`, etc.
 ```powershell
-   # example : 
+   # example :
    GET `/user`
    POST `/artist`
    POST `/album`
@@ -207,7 +217,11 @@ cat ./logs/error-2025-12-12.log
 **Verification:**
 ```bash
 # Automated tests
+# bash only
 npm run clean:db && npm run test:auth
+# or
+# powershell
+npm run test:clean:auth
 # Expected: 94 tests pass
 
 # Manual verification in Swagger:
@@ -238,7 +252,7 @@ SELECT login, password FROM users;
 -----------+--------------------------------------------------------------
  edgar_po  | $2b$10$6OgwY62zv3FcnKWOGNa4fualfD2FXAmKJGcq7vAaWXA/ahh.SXBi2
  testuser3 | $2b$10$vgN.bYuHoTML8NvIcCxDpeoU/gsdF7TPuTq6Rr0rDD4BbJFk3NiI6
-(2 rows)  
+(2 rows)
 ```
 
 ### Part 4: Authentication (Advanced Scope) - 30 points
@@ -346,7 +360,7 @@ Verify:
 - [X] No linting errors: `npm run lint`
 - [X] Swagger documentation accessible: http://localhost:4000/doc
 - [X] Log files created in `./logs/` directory
-- [X] All endpoints protected 
+- [X] All endpoints protected
 - [X] Passwords stored as bcrypt hashes (check DB)
 - [X] Environment variables configured in `.env`
 - [X] Docker containers running: `docker ps`
@@ -365,7 +379,7 @@ Verify:
 - ✅ 0 linting errors
 - ✅ 0 compilation errors
 
-**Final Score: 340/340 (100%)** 
+**Final Score: 340/340 (100%)**
 
 ---
 
@@ -383,6 +397,6 @@ This project is part of RS School Node.js 2025 Q4 course.
 
 ---
 
-**Author:** olenaweb  
-**Branch:** dev-part3  
+**Author:** olenaweb
+**Branch:** dev-part3
 **Date:** December 2025

@@ -72,7 +72,7 @@ export class LoggingInterceptor implements NestInterceptor {
     );
   }
 
-   // Sanitize sensitive data from request body
+  // Sanitize sensitive data from request body
   private sanitizeBody(body: Record<string, unknown>): Record<string, unknown> {
     const sensitiveFields = [
       'password',

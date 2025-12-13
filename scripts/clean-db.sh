@@ -7,7 +7,7 @@ docker exec home-library-postgres psql -U postgres -d home_library -c "TRUNCATE 
 echo "*** Restarting application..."
 docker-compose restart app
 
-echo "*** Waiting for application to start (5 seconds)..."
-sleep 5
+echo "*** Waiting for application to start (10 seconds)..."
+sleep 10
 
 echo "*** Database cleaned and application restarted!"

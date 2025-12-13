@@ -9,8 +9,8 @@ if ($LASTEXITCODE -eq 0) {
     Write-Host "Restarting application..." -ForegroundColor Yellow
     docker-compose restart app
 
-    Write-Host "Waiting for application to start (5 seconds)..." -ForegroundColor Yellow
-    Start-Sleep -Seconds 5
+    Write-Host "Waiting for application to start (10 seconds)..." -ForegroundColor Yellow
+    Start-Sleep -Seconds 10
 
     Write-Host "Done! Ready to run tests." -ForegroundColor Green
 } else {

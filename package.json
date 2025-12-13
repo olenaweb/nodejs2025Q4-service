@@ -28,7 +28,6 @@
     "test:clean:auth": "npm run clean:db && npm run test:auth",
     "test:refresh": "cross-env TEST_MODE=auth jest --testPathPattern refresh.e2e.spec.ts --noStackTrace --runInBand",
     "test:clean:refresh": "npm run clean:db && npm run test:refresh",
-    "test": "npm run test:clean:auth && npm run test:clean:refresh",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand"
