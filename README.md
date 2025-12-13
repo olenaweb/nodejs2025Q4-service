@@ -1,320 +1,383 @@
 # Home Library Service
 
-## Quick Start
+REST API service for managing home music library with authentication, authorization, logging, and error handling.
 
-## Prerequisites
+##  Project Overview
 
-- Git - [Download & Install Git](https://git-scm.com/downloads).
-- Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager.
-- Docker Desktop - [Download & Install Docker & Start Docker Desktop](https://www.docker.com/products/docker-desktop/)
+This project implements a comprehensive REST API service with:
+- **JWT-based Authentication & Authorization** (200 points)
+- **Advanced Logging & Error Handling** (170 points)
+- **Music Library Management** (Albums, Artists, Tracks, Favorites)
+- **Docker containerization** with PostgreSQL database
+- **Swagger API documentation**
 
-## Downloading and Install
-
-```
-git clone https://github.com/olenaweb/nodejs2025Q4-service.git
-cd nodejs2025Q4-service
-git checkout -b dev-part2 origin/dev-part2
-
-```
-
-#### Important!!! (because old project!!!)
-
-#### Installing NPM modules
-
-The --legacy-peer-deps flag is used to resolve dependency version conflicts.
-
-```
-npm install --legacy-peer-deps
-```
-
-## Check application
-
-```powershell
-# 1. !!! rename .env.example to .env
-# 2. start Docker Desktop in your OS
-# 3. create and run containers
-npm run start
-# 4. check logs of server in real time
-npm run logs
-# check http://localhost:4000/
-# 5. change head in nodejs2025Q4-service\src\app.service.ts "RSS Home Library Service 2025 Q4 🚀"
-# check http://localhost:4000/ - refresh the browser page, the title has changed in real time
-
-# 6. check tests
-npm run test:clean
-# 7. NPM script for vulnerabilities scanning
-npm run docker:check:db
-npm run docker:check:library
-# 8. Auto-fix and format
-npm run lint
-npm run format
-# 9. check network
-docker network inspect nodejs2025q4-service_home-library-network
-# 10. Check Database auth
-docker exec home-library-postgres env | Select-String -Pattern "POSTGRES"
-
-```
-
-```powershell
-# stop application
-npm run down
-# start application
-npm run up
-
-```
-
-##### 4. check logs of server in real time
-
-```
-docker-compose logs -f app
-```
-
-Expected output:
-
-```
-# ✅ Successfully connected to database
-# ✅ Application is running on: http://localhost:4000
-# ✅ Swagger UI: http://localhost:4000/doc
-```
-
-## 📋 Task Completion Checklist
-
-### ✅ Basic Scope (130 points) - Containerization, Docker
-
-| Requirement                                       | Points | Status | Implementation                               |
-| ------------------------------------------------- | ------ | ------ | -------------------------------------------- |
-| README.md has instruction how to run application  | +20    | ✅     | See "Quick Start"(#quick-start) section      |
-| User-defined bridge is created and configured     | +30    | ✅     | `home-library-network` in docker-compose.yml |
-| Container auto restart after crash                | +30    | ✅     | `restart: unless-stopped` policy             |
-| Application restarting upon changes in src folder | +20    | ✅     | nodemon + volume mount `./src:/app/src`      |
-| Database files and logs stored in volumes         | +30    | ✅     | `pgdata` and `postgres-logs` volumes         |
-
-**Total Basic Scope: 130/130 ✅**
-
-### ✅ Basic Scope (100 points) - Database & ORM
-
-| Requirement                             | Points | Status | Implementation                                 |
-| --------------------------------------- | ------ | ------ | ---------------------------------------------- |
-| Users data in PostgreSQL via Prisma     | +20    | ✅     | `User` model in schema.prisma + migrations     |
-| Artists data in PostgreSQL via Prisma   | +20    | ✅     | `Artist` model in schema.prisma + migrations   |
-| Albums data in PostgreSQL via Prisma    | +20    | ✅     | `Album` model in schema.prisma + migrations    |
-| Tracks data in PostgreSQL via Prisma    | +20    | ✅     | `Track` model in schema.prisma + migrations    |
-| Favorites data in PostgreSQL via Prisma | +20    | ✅     | `Favorite` model in schema.prisma + migrations |
-
-**Total Basic Scope: 100/100 ✅**
-
-### ✅ Advanced Scope (130 points)
-
-#### Containerization, Docker
-
-| Requirement                             | Points | Status | Implementation                                                                                                                                                                                           |
-| --------------------------------------- | ------ | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Image size < 500 MB                     | +20    | ✅     | postgres-db: 105.6 MB , rss-home-library: 204.5 MB [olenaweb/rss-home-library](https://hub.docker.com/r/olenaweb/rss-home-library) [olenaweb/postgres-db](https://hub.docker.com/r/olenaweb/postgres-db) |
-| NPM script for vulnerabilities scanning | +10    | ✅     | `npm run docker:check:db` and `npm run docker:check:library`                                                                                                                                             |
-| Image pushed to DockerHub               | +20    | ✅     | [olenaweb/postgres-db](https://hub.docker.com/r/olenaweb/postgres-db), [olenaweb/rss-home-library](https://hub.docker.com/r/olenaweb/rss-home-library)                                                   |
-
-**Note:** \*App image includes devDependencies (nodemon, @nestjs/cli, typescript) for hot-reload functionality required by the task.
-
-#### Database & ORM
-
-| Requirement                             | Points | Status | Implementation                                         |
-| --------------------------------------- | ------ | ------ | ------------------------------------------------------ |
-| Migrations create database entities     | +30    | ✅     | `prisma/migrations/` with `prisma migrate deploy`      |
-| Connection variables in .env            | +10    | ✅     | All vars in `.env` (POSTGRES_USER, PASSWORD, DB, PORT) |
-| Prisma relations between entities       | +10    | ✅     | Artist↔Album↔Track, Favorites many-to-many             |
-| PostgreSQL in Docker (no local install) | +30    | ✅     | postgres:17-alpine container with healthcheck          |
-
-**Total Advanced Scope: 130/130 ✅**
-
-### ✅ Forfeits Check (0 penalties)
-
-| Penalty                                                               | Points   | Status | Check                                                |
-| --------------------------------------------------------------------- | -------- | ------ | ---------------------------------------------------- |
-| specific image is used (ubuntu with installation of node or postgres) | -20      | ✅     | Using `postgres:17-alpine` and `node:24.11.0-alpine` |
-| Postgres not configured as dependency                                 | -20      | ✅     | `depends_on` with `condition: service_healthy`       |
-| Failing tests                                                         | -10 each | ✅     | All 67 tests passing                                 |
-| Hardcoded variables in docker-compose.yml                             | -20      | ✅     | All variables from `.env` via `${VAR}`               |
-
-**Total Penalties: 0 ✅**
+**Total Score: 340/340 points (100%)** ✅
 
 ---
 
-**Final Score: 360/360 points**
+##  Quick Start
 
-## Commands for Run of application
+### Prerequisites
 
-#### !!! Important . First of all : Start Docker Desktop in Your OS
+- **Git** - [Download & Install Git](https://git-scm.com/downloads)
+- **Node.js v22.14.0+** - [Download & Install Node.js](https://nodejs.org/en/download/)
+- **Docker Desktop** - [Download & Install Docker](https://www.docker.com/products/docker-desktop/) and start it
 
-```powershell
-docker-compose up -d --build
-# server log at real time:
-docker-compose logs -f app
+### Installation
 
+```bash
+# Clone repository
+git clone https://github.com/olenaweb/nodejs2025Q4-service.git
+cd nodejs2025Q4-service
+
+# Checkout the authentication branch
+git checkout -b dev-part3 origin/dev-part3
+
+# Install dependencies (use --legacy-peer-deps due to @nestjs/swagger compatibility)
+npm install --legacy-peer-deps
+
+# Rename environment file
+# Windows PowerShell:
+Copy-Item .env.example .env
+# Linux/Mac:
+cp .env.example .env
 ```
 
-### Stop
+### Running the Application
 
-```
-docker-compose down
-```
+```bash
+# Start Docker Desktop first!
 
-### Stop with removed volumes and network. Dont do it without reason!!!
+# Build and start containers
+npm run start
 
-```
-docker-compose down -v
-```
-
-**⚠️ IMPORTANT:** After `docker-compose down -v`, database tables are deleted! You need to apply migrations:
-
-```powershell
-# Reassembly
-docker-compose up -d --build
-```
-
-then
-
-```powershell
-# Windows PowerShell
-$env:DATABASE_URL="postgresql://postgres:postgres@localhost:5432/home_library?schema=public"; npx prisma migrate deploy
-
-# Linux/Mac
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/home_library?schema=public" npx prisma migrate deploy
-
-# Then restart application
-docker-compose restart app
-```
-
-#### The tables are in:
-
-**Where are the tables stored?**
-
-###### Tables are stored in Docker volume pgdata
-
-Volume is mounted to: /var/lib/postgresql/data inside the container
-Contains: All tables, indexes, PostgreSQL data
-**"Docker-compose down -v" removes all volumes**
-**Therefore, you need to re-apply the migrations**
-
-### Start , Restart
-
-```powershell
-# start
-docker-compose up -d
-# restart
-docker-compose restart
-
-```
-
-### Development Features
-
-#### ✅ Hot-Reload (Auto-restart on file changes)
-
-The application automatically restarts when you modify files in the `src` folder. This is achieved through:
-
-- **Volume mounting**: `./src` is mounted to `/app/src` in the container
-- **Watch mode**: NestJS `--watch` flag monitors file changes
-- Changes are detected and the app rebuilds/restarts automatically
-
-#### ✅ Auto-restart after crash
-
-Containers automatically restart if they crash:
-
-- **Policy**: `restart: unless-stopped` in docker-compose.yml
-- Applies to both `app` and `postgres` containers
-- Containers won't restart if manually stopped with `docker-compose stop`
-
-#### ✅ Environment Variables
-
-All database connection variables are stored in `.env`:
-
-- `POSTGRES_USER` - Database user
-- `POSTGRES_PASSWORD` - Database password
-- `POSTGRES_DB` - Database name
-- `POSTGRES_PORT` - Database port (5432)
-- `DATABASE_URL` - Full connection string (auto-constructed from above variables)
-
-**Note**: The `.env` file is git-ignored. Copy `.env.example` to `.env` and configure your values.
-
-### PostgreSQL Logs
-
-```powershell
-# status
-docker-compose ps postgres
-# logs
-docker-compose logs postgres
-# statistics
-docker stats home-library-app home-library-postgres
-# restart DB
-docker-compose restart postgres
-
-```
-
-### Container status
-
-```
-docker-compose ps
-
-```
-
-1. Start the app (4000 as default) : http://localhost:4000
-   There is an accessible menu for viewing documentation.
-2. After starting the app on port (4000 as default) you can open
-   in your browser OpenAPI documentation (Swagger UI) by typing http://localhost:4000/doc/ and check work of application or press the button "Swagger UI" .
-
-## Docker images size
-
-###### in Docker Desktop
-
-```
-olenaweb/home-library-postgres:latest 105.6 MB
-olenaweb/rss-home-library:latest      204.5 MB
-```
-
-## Testing (only after Server started!!!)
-
-```powershell
-npm run test:clean
+# View logs in real-time
+npm run logs
 # or
-npm run clean:db  # Clears tables and preserves structure
-npm test
-```
+docker logs home-library-app
 
-### Auto-fix and format
-
-```
+# Test included clean database before tests (REQUIRED!) and run 98 tests
+npm run test
+# check database
+docker exec -it home-library-postgres psql -U postgres -d home_library -c "SELECT login, password FROM users;"
+# check linter
 npm run lint
+# Stop containers
+npm run down
+# Start containers
+npm run up
 ```
 
+**Access Points:**
+- Application: http://localhost:4000/
+- Swagger UI: http://localhost:4000/doc
+
+---
+
+##  Testing & Verification
+### 0. All Basic Functionality Tests with Authentication & Authorization and Refresh Token  
+
+```bash
+# Included clean database before tests (REQUIRED!) and run 98 tests
+npm run test
 ```
+
+### 1. Basic Functionality Tests with Authentication & Authorization
+
+```bash
+# Clean database before tests (REQUIRED!)
+npm run clean:db
+# Run authentication tests
+npm run test:auth
+
+# or
+npm run test:clean:auth
+```
+
+**Expected:** 94 tests pass (10 test suites)
+
+### 2. Refresh Token Tests
+
+```bash
+# Clean database (REQUIRED!)
+npm run clean:db
+# Run refresh token tests
+npm run test:refresh
+
+# or
+npm run test:clean:refresh  
+```
+
+**Expected:** 4 tests pass
+
+### 4. Manual Testing via Swagger
+
+1. Open http://localhost:4000/doc
+2. **Register user:** POST `/auth/signup`
+   ```json
+   {
+    "login": "edgar_po",
+    "password": "secret123"
+   }
+   ```
+3. **Login:** POST `/auth/login` (same credentials)
+   - Copy the `accessToken` from response
+4. **Authorize:** Click 🔒 "Authorize" button at top
+   - Enter: `{your_accessToken}`
+   ##### example :
+   - Enter: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyYWE3OTRmNi01YTY0LTRkMTMtYmI0Ny00OWEwMzI3NWM2ZmUiLCJsb2dpbiI6ImVkZ2FyX3BvIiwiaWF0IjoxNzY1NjExODcyLCJleHAiOjE3NjU2MTU0NzJ9.1EETNhYBAANKoEse27p-Ss7mwQM39Tjesk4ybQmCTCg`
+   - Click "Authorize" button
+5. **Test protected endpoints:** Try GET `/user`, `/artist`, `/album`, etc.
+```powershell
+   # example : 
+   GET `/user`
+   POST `/artist`
+   POST `/album`
+   POST `/track`
+   POST favs/artist/1039c10b-83c7-406e-b1cb-5499af0ed3ea -use real Id
+   GET `/favs`
+   # and so on...
+```
+### 5. Code Quality Checks
+
+```bash
+# Check for linting errors
+npm run lint
+
+# Format code
 npm run format
+
+# Security scan
+npm run docker:check:db
+npm run docker:check:library
 ```
 
-## Modules
+---
 
-This application includes 5 main modules:
+##  Implementation Status
 
-- **User** - User management with authentication
-- **Artist** - Artist management
-- **Album** - Album management with artist relationships
-- **Track** - Track management with artist and album relationships
-- **Favorites** - Favorites management for artists, albums, and tracks
+### Part 1: Logging & Error Handling (Basic Scope) - 100/100 points
 
-#### RUN
+| Requirement | Points | Status | Implementation |
+|------------|--------|--------|----------------|
+| Custom LoggingService implemented | 20 | ✅ | `src/logging/logging.service.ts` with Winston |
+| Custom Exception Filter implemented | 20 | ✅ | `src/logging/all-exceptions.filter.ts` |
+| Request/Response logging | 20 | ✅ | `src/logging/logging.interceptor.ts` logs URL, query, body, status |
+| Error handling with proper HTTP codes | 20 | ✅ | All controllers use proper status codes (400, 404, 409, etc.) |
+| `uncaughtException` handling | 10 | ✅ | `src/main.ts` - logged and graceful shutdown |
+| `unhandledRejection` handling | 10 | ✅ | `src/main.ts` - logged and graceful shutdown |
 
-**✅ What to check with OpenAPI/Swagger:**
+**Verification:**
+- Logs in console show structured JSON format
+- All errors return proper HTTP status codes
+- Check `docker logs home-library-app` for exception handling
 
-1. Open in your browser: `http://localhost:4000/doc`
-2. You should see Swagger UI with a "Users" and others sections
-3. Try running queries directly in Swagger:
-   - Click on `POST /user`
-   - Click "Try it out"
-   - Enter data:
-     ```json
-     {
-       "login": "testuser",
-       "password": "Password123"
-     }
-     ```
-   - Click "Execute"
-   - You will receive a response with the created user (without password!)
-4. continue with others endpoints
+### Part 2: Logging & Error Handling (Advanced Scope) - 70/70 points
+
+| Requirement | Points | Status | Implementation |
+|------------|--------|--------|----------------|
+| Logs written to file | 20 | ✅ | `logs/application-YYYY-MM-DD.log` on host machine |
+| Log file rotation by size | 10 | ✅ | Rotates at 10MB (configurable) |
+| Environment variable for max file size | 10 | ✅ | `LOG_FILE_MAX_SIZE` in `.env` (default: 10m) |
+| Separate error log file | 10 | ✅ | `logs/error-YYYY-MM-DD.log` for errors only |
+| Logging level configuration | 20 | ✅ | `LOG_LEVEL` in `.env` (0-4: error, warn, log, debug, verbose ; now set to 4) |
+
+**Verification:**
+```bash
+# Check log files on host (real-time sync with container)
+ls -lh ./logs/
+cat ./logs/application-2025-12-12.log
+cat ./logs/error-2025-12-12.log
+
+# Test rotation: Set LOG_FILE_MAX_SIZE=1m in .env and make many requests
+```
+
+### Part 3: Authentication (Basic Scope) - 140 points
+
+| Requirement | Points | Status | Implementation |
+|------------|--------|--------|----------------|
+| POST `/auth/signup` with service separation | 30 | ✅ | `src/auth/auth.controller.ts` + `auth.service.ts` |
+| POST `/auth/login` with service separation | 30 | ✅ | Returns `accessToken` + `refreshToken` |
+| Password hashing (bcrypt) | 10 | ✅ | 10 salt rounds, stored as hash in DB |
+| Access Token (JWT with userId + login) | 20 | ✅ | Secret in `.env`, expires in 1h |
+| Authentication required for all routes | 40 | ✅ | `JwtAuthGuard` on all controllers except `/auth/*`, `/doc`, `/` |
+| Separate JWT validation module | 10 | ✅ | `JwtStrategy` + `JwtAuthGuard` in `src/auth/` |
+
+**Verification:**
+```bash
+# Automated tests
+npm run clean:db && npm run test:auth
+# Expected: 94 tests pass
+
+# Manual verification in Swagger:
+# 1. Try GET /user without token → 401 Unauthorized
+# 2. Signup → Login → Copy token
+# 3. Authorize with token → GET /user → 200 OK
+```
+**Verification of Password hashing (bcrypt)**
+```bash
+# Check DB for hashed password
+docker exec -it home-library-postgres psql -U postgres -d home_library -c "SELECT login, password FROM users;"
+
+# or
+docker exec -it home-library-postgres psql -U postgres -d home_library
+# show tables
+\d
+# show users table
+\d users
+# show users table columns
+\d+ users
+# show users table data
+SELECT login, password FROM users;
+# quit
+\q
+
+# example of answer :
+   login   |                           password
+-----------+--------------------------------------------------------------
+ edgar_po  | $2b$10$6OgwY62zv3FcnKWOGNa4fualfD2FXAmKJGcq7vAaWXA/ahh.SXBi2
+ testuser3 | $2b$10$vgN.bYuHoTML8NvIcCxDpeoU/gsdF7TPuTq6Rr0rDD4BbJFk3NiI6
+(2 rows)  
+```
+
+### Part 4: Authentication (Advanced Scope) - 30 points
+
+| Requirement | Points | Status | Implementation |
+|------------|--------|--------|----------------|
+| POST `/auth/refresh` with service separation | 30 | ✅ | Validates `refreshToken`, returns new tokens |
+
+**Verification:**
+```bash
+npm run clean:db && npm run test:refresh
+# Expected: 4 tests pass (valid token, invalid token, missing token, expired token)
+```
+
+---
+
+##  Project Structure
+
+```
+src/
+├── auth/                      # Authentication & Authorization
+│   ├── auth.controller.ts    # Signup, Login, Refresh endpoints
+│   ├── auth.service.ts       # JWT generation, password hashing
+│   ├── auth.module.ts        # JWT module configuration
+│   ├── dto/                  # SignupDto, LoginDto, RefreshDto
+│   ├── guards/               # JwtAuthGuard
+│   └── strategies/           # JwtStrategy (token validation)
+├── logging/                   # Logging & Error Handling
+│   ├── logging.service.ts    # Winston-based logger
+│   ├── logging.interceptor.ts # Request/Response logging
+│   ├── all-exceptions.filter.ts # Global exception handler
+│   └── winston.config.ts     # Winston configuration
+├── user/                      # User CRUD (protected)
+├── artist/                    # Artist CRUD (protected)
+├── album/                     # Album CRUD (protected)
+├── track/                     # Track CRUD (protected)
+├── favs/                      # Favorites management (protected)
+└── prisma/                    # Database ORM
+logs/                          # Log files (synced from container)
+test/                          # E2E tests
+```
+
+---
+
+##  Environment Variables
+
+Key variables in `.env`:
+
+```env
+# Server
+PORT=4000
+
+# Database
+DATABASE_URL="postgresql://postgres:postgres@postgres:5432/home_library?schema=public"
+
+# JWT Authentication
+JWT_SECRET_KEY=secret123123
+JWT_SECRET_REFRESH_KEY=secret123123
+TOKEN_EXPIRE_TIME=1h
+TOKEN_REFRESH_EXPIRE_TIME=24h
+
+# Password Hashing
+CRYPT_SALT=10
+
+# Logging
+LOG_LEVEL=3                    # 0=error, 1=warn, 2=log, 3=debug, 4=verbose
+LOG_FILE_MAX_SIZE=20m          # Max size before rotation
+```
+
+---
+
+##  Available Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run start` | Build and start Docker containers |
+| `npm run down` | Stop Docker containers |
+| `npm run up` | Start existing containers |
+| `npm run logs` | View application logs in real-time |
+| `npm run clean:db` | Clear database and restart app |
+| `npm test` | Run all basic and authentication refresh tests |
+| `npm run test:auth` | Run authentication tests (94 tests) |
+| `npm run test:clean:auth` | Clean DB + Run authentication tests (94 tests) |
+| `npm run test:refresh` | Run refresh token tests (4 tests) |
+| `npm run test:clean:refresh` | Clean DB + Run refresh token tests (4 tests) |
+| `npm run lint` | Check and fix linting errors |
+| `npm run format` | Format code with Prettier |
+| `npm run docker:check:db` | Security scan for PostgreSQL image |
+| `npm run docker:check:library` | Security scan for app image |
+| `docker exec -it home-library-postgres psql -U postgres -d home_library -c "SELECT login, password FROM users;"` | Check DB for hashed password |
+
+---
+
+
+##  Final Checklist
+
+Verify:
+
+- [X] All tests pass: `npm run clean:db && npm run test:auth` (94 tests)
+- [X] Refresh tests pass: `npm run clean:db && npm run test:refresh` (4 tests)
+- [X] No linting errors: `npm run lint`
+- [X] Swagger documentation accessible: http://localhost:4000/doc
+- [X] Log files created in `./logs/` directory
+- [X] All endpoints protected 
+- [X] Passwords stored as bcrypt hashes (check DB)
+- [X] Environment variables configured in `.env`
+- [X] Docker containers running: `docker ps`
+
+---
+
+##  Test Results Summary
+
+**Total: 98/98 tests passing (100%)**
+
+- ✅ Basic tests with Authentication: 94 tests
+- ✅ Refresh token tests: 4 tests
+
+**No forfeits:**
+- ✅ 0 failing tests
+- ✅ 0 linting errors
+- ✅ 0 compilation errors
+
+**Final Score: 340/340 (100%)** 
+
+---
+
+##  Support
+
+For questions about implementation, check:
+- Swagger documentation: http://localhost:4000/doc
+- Application logs: `./logs/application-*.log`
+
+---
+
+##  License
+
+This project is part of RS School Node.js 2025 Q4 course.
+
+---
+
+**Author:** olenaweb  
+**Branch:** dev-part3  
+**Date:** December 2025

@@ -13,13 +13,13 @@ dotenv.config();
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Get LoggingService instance for global exception handling
+  // LoggingService instance for global exception handling
   const loggingService = app.get(LoggingService);
 
-  // Handle uncaught exceptions
+  // Uncaught exceptions
   process.on('uncaughtException', async (error: Error) => {
     loggingService.fatal(
-      `💥 Uncaught Exception: ${error.message}`,
+      `⚠️ Uncaught Exception: ${error.message}`,
       error.stack,
       'UncaughtException',
     );
@@ -27,8 +27,7 @@ async function bootstrap() {
     console.error('Application encountered an uncaught exception. Exiting...');
 
     try {
-      // Give time for logs to be written
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // time for written logs
       await app.close();
       loggingService.log('Application closed gracefully', 'UncaughtException');
     } catch (closeError) {
@@ -42,7 +41,7 @@ async function bootstrap() {
     }
   });
 
-  // Handle unhandled promise rejections
+  // Unhandled rejections
   process.on('unhandledRejection', (reason: unknown) => {
     const message = reason instanceof Error ? reason.message : String(reason);
 
@@ -77,6 +76,7 @@ async function bootstrap() {
     .setTitle('RSS Home Library Service')
     .setDescription('Home music library service - olenaweb/nodejs2025Q4-service')
     .setVersion('1.0.0')
+    .addBearerAuth()
     .build();
 
   const options: SwaggerDocumentOptions = {

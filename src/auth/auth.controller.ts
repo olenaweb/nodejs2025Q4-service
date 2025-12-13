@@ -29,7 +29,7 @@ export class AuthController {
       type: 'object',
       properties: {
         id: { type: 'string', format: 'uuid', example: '60efc925-a049-404d-9390-d0ff252abc09' },
-        login: { type: 'string', example: 'john_doe' },
+        login: { type: 'string', example: 'edgar_po' },
       },
     },
   })
