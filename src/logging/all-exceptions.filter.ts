@@ -16,7 +16,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
 
-    // Determine status code and message
     let status: number;
     let message: string | object;
     let errorName: string;

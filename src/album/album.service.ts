@@ -107,8 +107,7 @@ export class AlbumService {
       this.logger.warn(`Album not found for deletion: ${id}`, 'AlbumService');
       throw new NotFoundException('Album not found');
     }
-
-    // Delete album (Prisma will handle CASCADE for tracks via onDelete: SetNull)
+    // not need anymore to delete album (Prisma will do it)
     await this.prisma.album.delete({
       where: { id },
     });

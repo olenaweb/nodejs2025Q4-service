@@ -25,7 +25,7 @@ export class FavsService implements OnModuleInit {
     this.albumService = this.moduleRef.get(AlbumService, { strict: false });
     this.trackService = this.moduleRef.get(TrackService, { strict: false });
 
-    // Ensure there is one Favorite record
+    // need at least one Favorite record
     let favorite = await this.prisma.favorite.findFirst();
     if (!favorite) {
       favorite = await this.prisma.favorite.create({
@@ -82,12 +82,10 @@ export class FavsService implements OnModuleInit {
         return false;
       }
     } catch {
-      // Artist not found
       this.logger.warn(`Artist not found (exception): ${id}`, 'FavsService');
       return false;
     }
 
-    // Check if already in favorites
     const existing = await this.prisma.favoriteArtist.findUnique({
       where: {
         favoriteId_artistId: {
@@ -157,12 +155,10 @@ export class FavsService implements OnModuleInit {
         return false;
       }
     } catch {
-      // Album not found
       this.logger.warn(`Album not found (exception): ${id}`, 'FavsService');
       return false;
     }
 
-    // Check if already in favorites
     const existing = await this.prisma.favoriteAlbum.findUnique({
       where: {
         favoriteId_albumId: {
@@ -237,7 +233,6 @@ export class FavsService implements OnModuleInit {
       return false;
     }
 
-    // Check if already in favorites
     const existing = await this.prisma.favoriteTrack.findUnique({
       where: {
         favoriteId_trackId: {

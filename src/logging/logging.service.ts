@@ -21,7 +21,6 @@ export class LoggingService implements LoggerService {
     this.logLevel = parseInt(process.env.LOG_LEVEL || '3', 10);
   }
 
-  // should be logged at a given level
   private shouldLog(level: LogLevel): boolean {
     const messageLevel = this.LOG_LEVELS[level];
     return messageLevel <= this.logLevel;

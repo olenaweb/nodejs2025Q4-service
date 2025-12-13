@@ -101,7 +101,7 @@ export class ArtistService {
       throw new NotFoundException('Artist not found');
     }
 
-    // Delete artist (Prisma will handle CASCADE for albums/tracks via onDelete: SetNull)
+    // not need anymore to delete artist (Prisma will do it)
     await this.prisma.artist.delete({
       where: { id },
     });

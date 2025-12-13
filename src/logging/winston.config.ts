@@ -1,16 +1,10 @@
 import * as winston from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
 
-/**
- * Creates and configures Winston logger
- *
- *Features:
- * - Rotation by date (new file every day)
- * - Rotation by size (when maxSize is reached)
- * - Separate file for errors
- * - Customizable logging level via ENV
- * - JSON format for files, color for the console
- */
+// Winston logger
+// Rotation by date (new file every day)
+// Rotation by size (when maxSize is reached)
+
 export const createWinstonLogger = () => {
   const logLevel = process.env.LOG_LEVEL || '3';
   const maxFileSize = process.env.LOG_FILE_MAX_SIZE || '10m';
@@ -35,7 +29,6 @@ export const createWinstonLogger = () => {
 
   const winstonLevel = nestToWinstonLevel[logLevel] || 'info';
 
-  // Format for console (colorful, readable)
   const consoleFormat = winston.format.combine(
     winston.format.colorize(),
     winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
@@ -46,13 +39,12 @@ export const createWinstonLogger = () => {
     }),
   );
 
-  // Format for files (JSON, structured)
   const fileFormat = winston.format.combine(winston.format.timestamp(), winston.format.json());
 
   // Transports (where logs are written)
   const transports: winston.transport[] = [];
 
-  // Console (only in development)
+  // Console
   if (nodeEnv === 'development') {
     transports.push(
       new winston.transports.Console({
@@ -62,9 +54,7 @@ export const createWinstonLogger = () => {
   }
 
   // File for all logs (application-%DATE%.log)
-  // - Rotation by date: new file every day
-  // - Rotation by size: new file when maxSize is reached
-  // - Auto deletion: files older than maxFiles are deleted
+  // Rotation by date,by size
   transports.push(
     new DailyRotateFile({
       filename: 'logs/application-%DATE%.log',
@@ -72,13 +62,11 @@ export const createWinstonLogger = () => {
       maxSize: maxFileSize,
       maxFiles: maxFiles,
       format: fileFormat,
-      auditFile: 'logs/.audit-application.json', // Service file for rotation tracking
+      auditFile: 'logs/.audit-application.json',
     }),
   );
 
   // File for errors only (error-%DATE%.log)
-  // - Only error level and above (fatal will also be included)
-  // - Separate rotation
   transports.push(
     new DailyRotateFile({
       filename: 'logs/error-%DATE%.log',

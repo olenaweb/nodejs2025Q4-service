@@ -16,39 +16,36 @@ export class LoggingInterceptor implements NestInterceptor {
     const { method, url, body, query } = request;
     const startTime = Date.now();
 
-    // Skip logging for health check endpoint
+    // Skip logging for health check endpoint every 30 seconds
     const isHealthCheck = url === '/' && method === 'GET';
 
-    // Log incoming request (skip health checks)
     if (!isHealthCheck) {
       this.logger.log(`→ ${method} ${url}`, 'LoggingInterceptor');
 
-      // Debug: log body type and presence
+      // Debug
       // this.logger.debug(
       //   `  [Debug] body type: ${typeof body}, has body: ${!!body}, keys: ${body ? Object.keys(body).length : 0}`,
       //   'LoggingInterceptor',
       // );
     }
 
-    // Log query parameters if present (skip health checks)
+    // Log query parameters
     if (!isHealthCheck && Object.keys(query).length > 0) {
       this.logger.log(`  Query: ${JSON.stringify(query)}`, 'LoggingInterceptor');
     }
 
-    // Log request body if present (exclude sensitive data, skip health checks)
+    // Log body
     if (!isHealthCheck && body && typeof body === 'object' && Object.keys(body).length > 0) {
       const sanitizedBody = this.sanitizeBody(body as Record<string, unknown>);
       this.logger.log(`  Body: ${JSON.stringify(sanitizedBody)}`, 'LoggingInterceptor');
     }
 
-    // Process request and log response
     return next.handle().pipe(
       tap({
         next: () => {
           const duration = Date.now() - startTime;
           const statusCode = response.statusCode;
 
-          // Skip logging response for health checks
           if (!isHealthCheck) {
             this.logger.log(
               `← ${method} ${url} - ${statusCode} - ${duration}ms`,
@@ -56,7 +53,6 @@ export class LoggingInterceptor implements NestInterceptor {
             );
           }
 
-          // Log slow requests (> 1 second, even for health checks)
           if (duration > 1000) {
             this.logger.warn(
               `⚠️  Slow request: ${method} ${url} took ${duration}ms`,
@@ -76,9 +72,7 @@ export class LoggingInterceptor implements NestInterceptor {
     );
   }
 
-  /**
-   * Sanitize sensitive data from request body
-   */
+   // Sanitize sensitive data from request body
   private sanitizeBody(body: Record<string, unknown>): Record<string, unknown> {
     const sensitiveFields = [
       'password',

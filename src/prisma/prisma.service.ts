@@ -12,8 +12,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     const pool = new Pool({ connectionString });
     const adapter = new PrismaPg(pool);
 
-    // Prisma logging configuration based on environment variables
-    // DATABASE_LOGGING options: 'none', 'error', 'warn', 'info', 'query', 'all'
+    // Database logging options
     const getPrismaLogLevel = (): Prisma.LogLevel[] => {
       const logLevel = process.env.DATABASE_LOGGING?.toLowerCase();
 
@@ -33,7 +32,6 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
         case 'true':
           return ['query', 'info', 'warn', 'error'];
         default:
-          // Default: only errors and warnings
           return ['warn', 'error'];
       }
     };
