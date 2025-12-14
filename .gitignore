@@ -33,3 +33,13 @@ lerna-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+tutor
+1.yaml
+# Environment variables
+.env
+.gitignore
+README.html
+
+/scripts/README.md
+/test-script
+

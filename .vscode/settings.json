@@ -1,0 +1,60 @@
+{
+  // autoformation with save
+  "editor.formatOnSave": true,
+
+  // Prettier as the default formatter
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  // Prettier for TypeScript (can be disabled if it interferes)
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  }, // Prettier for JavaScript
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+
+  // Prettier for JSON
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+
+  // Prettier for JSONC
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+
+  // ESLint auto-fix on save
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+
+  // Enable ESLint
+  "eslint.enable": true,
+
+  // Validation for TypeScript/JavaScript
+  "eslint.validate": ["javascript", "typescript"],
+
+  // Indentation settings (according to NestJS standards)
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+
+  // Auto-save files after a delay
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1000,
+
+  // Do not show whitespace (or "boundary" for minimal display)
+  "editor.renderWhitespace": "none",
+
+  // Remove trailing whitespace
+  "files.trimTrailingWhitespace": true,
+
+  // Add a new line at the end of the file
+  "files.insertFinalNewline": true,
+
+  // Remove extra new lines at the end
+  "files.trimFinalNewlines": true
+}
