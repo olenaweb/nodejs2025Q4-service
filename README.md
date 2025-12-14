@@ -85,12 +85,6 @@ npm run up
 ---
 
 ##  Testing & Verification
-### 0. All Basic Functionality Tests with Authentication & Authorization and Refresh Token
-
-```bash
-# Included clean database before tests (REQUIRED!) and run 98 tests
-npm run test
-```
 
 ### 1. Basic Functionality Tests with Authentication & Authorization
 
@@ -170,7 +164,7 @@ npm run docker:check:library
 
 | Requirement | Points | Status | Implementation |
 |------------|--------|--------|----------------|
-| Custom LoggingService implemented | 20 | ✅ | `src/logging/logging.service.ts` with Winston |
+| Custom LoggingService implemented | 20 | ✅ | `src/logging/logging.service.ts`  |
 | Custom Exception Filter implemented | 20 | ✅ | `src/logging/all-exceptions.filter.ts` |
 | Request/Response logging | 20 | ✅ | `src/logging/logging.interceptor.ts` logs URL, query, body, status |
 | Error handling with proper HTTP codes | 20 | ✅ | All controllers use proper status codes (400, 404, 409, etc.) |
@@ -270,36 +264,6 @@ npm run clean:db && npm run test:refresh
 npm run test:clean:refresh
 # Expected: 4 tests pass (valid token, invalid token, missing token, expired token)
 ```
-
----
-
-##  Project Structure
-
-```
-src/
-├── auth/                      # Authentication & Authorization
-│   ├── auth.controller.ts    # Signup, Login, Refresh endpoints
-│   ├── auth.service.ts       # JWT generation, password hashing
-│   ├── auth.module.ts        # JWT module configuration
-│   ├── dto/                  # SignupDto, LoginDto, RefreshDto
-│   ├── guards/               # JwtAuthGuard
-│   └── strategies/           # JwtStrategy (token validation)
-├── logging/                   # Logging & Error Handling
-│   ├── logging.service.ts    # Winston-based logger
-│   ├── logging.interceptor.ts # Request/Response logging
-│   ├── all-exceptions.filter.ts # Global exception handler
-│   └── winston.config.ts     # Winston configuration
-├── user/                      # User CRUD (protected)
-├── artist/                    # Artist CRUD (protected)
-├── album/                     # Album CRUD (protected)
-├── track/                     # Track CRUD (protected)
-├── favs/                      # Favorites management (protected)
-└── prisma/                    # Database ORM
-logs/                          # Log files (synced from container)
-test/                          # E2E tests
-```
-
----
 
 ##  Environment Variables
 
