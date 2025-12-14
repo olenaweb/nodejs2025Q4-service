@@ -69,6 +69,7 @@ npm run clean:db
 npm run test:refresh
 
 # check database
+# First add a user, for example via Swagger:  http://localhost:4000/doc;  auth/signup; auth/login ;
 docker exec -it home-library-postgres psql -U postgres -d home_library -c "SELECT login, password FROM users;"
 # check linter
 npm run lint
